@@ -1,11 +1,11 @@
 {
-  "name": "Starter Kit",
+  "name": "AutoPIL",
   "colors": {
     "light": {
-      "brand": "#F97316"
+      "brand": "#4F46E5"
     },
     "dark": {
-      "brand": "#FDBA74"
+      "brand": "#818CF8"
     }
   },
   "navigation": {
@@ -15,59 +15,75 @@
         "icon": "book",
         "groups": [
           {
-            "group": "Start Here",
+            "group": "Getting Started",
             "icon": "rocket",
             "pages": [
               {
-                "title": "Introduction",
-                "path": "introduction",
-                "icon": "home"
-              },
-              {
-                "title": "Quickstart",
-                "path": "quickstart",
+                "title": "Quick Start",
+                "path": "getting-started/quickstart",
                 "icon": "zap"
               },
               {
-                "title": "Components",
-                "path": "components",
-                "icon": "code"
+                "title": "First-Start Bootstrap",
+                "path": "getting-started/first-start",
+                "icon": "power"
               }
             ]
           },
           {
-            "group": "Components",
+            "group": "Core Concepts",
             "icon": "layers",
             "pages": [
               {
-                "title": "Images",
-                "path": "components/images",
-                "icon": "image"
+                "title": "Architecture",
+                "path": "core-concepts/architecture",
+                "icon": "network"
               },
               {
-                "title": "Cards",
-                "path": "components/cards",
-                "icon": "square"
+                "title": "Multi-Tenancy",
+                "path": "core-concepts/multi-tenancy",
+                "icon": "building"
               },
               {
-                "title": "Code",
-                "path": "components/code",
-                "icon": "code"
+                "title": "Agent Identity",
+                "path": "core-concepts/agent-identity",
+                "icon": "fingerprint"
+              }
+            ]
+          },
+          {
+            "group": "Policy Guide",
+            "icon": "shield",
+            "pages": [
+              {
+                "title": "Policy File Format",
+                "path": "policy-guide/policy-format",
+                "icon": "file-code"
               },
               {
-                "title": "Callouts",
-                "path": "components/callouts",
-                "icon": "message-square"
+                "title": "Fields Reference",
+                "path": "policy-guide/fields-reference",
+                "icon": "list"
               },
               {
-                "title": "Steps",
-                "path": "components/steps",
+                "title": "Evaluation Order",
+                "path": "policy-guide/evaluation-order",
                 "icon": "list-ordered"
               },
               {
-                "title": "Tabs",
-                "path": "components/tabs",
-                "icon": "columns"
+                "title": "Sensitivity & Task Scoping",
+                "path": "policy-guide/sensitivity-levels",
+                "icon": "gauge"
+              },
+              {
+                "title": "Hot Reload",
+                "path": "policy-guide/hot-reload",
+                "icon": "refresh-cw"
+              },
+              {
+                "title": "Agent ID Binding",
+                "path": "policy-guide/agent-id-binding",
+                "icon": "lock"
               }
             ]
           }
@@ -83,69 +99,119 @@
             "pages": [
               {
                 "title": "Authentication",
-                "path": "authentication",
+                "path": "api-reference/authentication",
                 "icon": "lock"
+              },
+              {
+                "title": "Log Retention",
+                "path": "api-reference/log-retention",
+                "icon": "clock"
+              },
+              {
+                "title": "PII Masking",
+                "path": "api-reference/pii-masking",
+                "icon": "eye-off"
               }
             ]
           },
           {
-            "group": "Sample Endpoints",
-            "openapi": "openapi.yaml"
+            "group": "Endpoints",
+            "icon": "terminal",
+            "openapi": "api-reference/openapi.yaml"
           }
         ]
       },
       {
-        "tab": "Help Center",
-        "icon": "help-circle",
-        "pages": [
+        "tab": "SDKs & Integrations",
+        "icon": "plug",
+        "groups": [
           {
-            "title": "Help Center",
-            "path": "help-center",
-            "icon": "home"
-          },
-          {
-            "group": "FAQs",
-            "icon": "help-circle",
-            "expandable": false,
+            "group": "SDKs & Integrations",
+            "icon": "plug",
             "pages": [
               {
-                "title": "Documentation Source",
-                "path": "help-center/faq/getting-started"
-              }
-            ]
-          },
-          {
-            "group": "Troubleshooting",
-            "icon": "alert-triangle",
-            "expandable": false,
-            "pages": [
+                "title": "Choosing an Integration Pattern",
+                "path": "sdks/integration-patterns",
+                "icon": "git-branch"
+              },
               {
-                "title": "Page Missing in Sidebar",
-                "path": "help-center/troubleshooting/install-error"
-              }
-            ]
-          },
-          {
-            "group": "Guides",
-            "icon": "book-open",
-            "expandable": false,
-            "pages": [
+                "title": "Python SDK",
+                "path": "sdks/python-sdk",
+                "icon": "code"
+              },
               {
-                "title": "Create Your First Page",
-                "path": "help-center/guides/setup-project"
+                "title": "TypeScript SDK",
+                "path": "sdks/typescript-sdk",
+                "icon": "code"
+              },
+              {
+                "title": "Go SDK",
+                "path": "sdks/go-sdk",
+                "icon": "code"
+              },
+              {
+                "title": "Java SDK",
+                "path": "sdks/java-sdk",
+                "icon": "code"
+              },
+              {
+                "title": "MCP Server",
+                "path": "sdks/mcp-server",
+                "icon": "server"
+              },
+              {
+                "title": "ASGI Middleware",
+                "path": "sdks/middleware",
+                "icon": "layers"
+              },
+              {
+                "title": "Framework Integrations",
+                "path": "sdks/frameworks",
+                "icon": "boxes"
               }
             ]
           }
         ]
       },
       {
-        "tab": "Changelog",
-        "icon": "clock",
-        "pages": [
+        "tab": "Deployment",
+        "icon": "server",
+        "groups": [
           {
-            "title": "Changelog",
-            "path": "changelog",
-            "icon": "history"
+            "group": "Deployment",
+            "icon": "server",
+            "pages": [
+              {
+                "title": "Local Development",
+                "path": "deployment/local",
+                "icon": "laptop"
+              },
+              {
+                "title": "Docker",
+                "path": "deployment/docker",
+                "icon": "container"
+              },
+              {
+                "title": "Postgres",
+                "path": "deployment/postgres",
+                "icon": "database"
+              },
+              {
+                "title": "OpenTelemetry",
+                "path": "deployment/opentelemetry",
+                "icon": "activity"
+              },
+              {
+                "title": "Alerting (SMTP)",
+                "path": "deployment/alerting",
+                "icon": "bell"
+              },
+              {
+                "title": "PII Masking & Identity",
+                "path": "deployment/pii-masking",
+                "icon": "shield-check"
+              }
+            ]
           }
         ]
       }

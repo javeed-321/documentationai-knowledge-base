@@ -1,0 +1,57 @@
+---
+title: Go SDK
+description: A stdlib-only REST client published at github.com/vibrantcapital/autopil-go.
+---
+
+## Go SDK
+
+A stdlib-only REST client published at `github.com/vibrantcapital/autopil-go`. No external dependencies — uses only `net/http` and `encoding/json`. Requires Go 1.21+.
+
+```bash title="terminal"
+go get github.com/vibrantcapital/autopil-go
+```
+
+Set `AUTOPIL_BASE_URL` and `AUTOPIL_API_KEY` in your environment. Get your key from the dashboard under Settings → API Keys (`evaluate` scope for agent code).
+
+```go title="main.go"
+import "github.com/vibrantcapital/autopil-go/autopil"
+
+client := autopil.New(
+    os.Getenv("AUTOPIL_BASE_URL"),  // https://your-app.onrender.com
+    os.Getenv("AUTOPIL_API_KEY"),
+)
+
+// Evaluate a retrieval request
+result, err := client.Context.Evaluate(ctx, autopil.EvaluateRequest{
+    AgentRole:        "loan_underwriter",
+    UserID:           "user_001",
+    SourceID:         "credit_scores",
+    SensitivityLevel: "high",
+    SessionID:        sessionID,
+})
+if err != nil { return err }
+if result.Decision == "DENY" {
+    return fmt.Errorf("access denied: %s", result.Reason)
+}
+
+// Query audit events
+events, err := client.Audit.ListEvents(ctx, autopil.ListEventsParams{
+    AgentRole: "loan_underwriter",
+    Decision:  "DENY",
+    Limit:     50,
+})
+```
+
+## Client resources
+
+| Resource | Methods |
+|---|---|
+| `client.Context` | `Evaluate()` |
+| `client.Audit` | `ListEvents()`, `GetStats()`, `GetSession()`, `RecordLineage()`, `GetLineage()` |
+| `client.Sessions` | `List()`, `Get()`, `Revoke()` |
+| `client.Policies` | `List()`, `Create()`, `Update()`, `Delete()`, `Reload()` |
+| `client.Health()` | — no auth required |
+
+<Callout kind="info">
+  `AutoPILError` implements `error` and carries `StatusCode int` and `Detail string` from the server response. Options: `autopil.WithTimeout(d)`, `autopil.WithHTTPClient(c)`.
+</Callout>

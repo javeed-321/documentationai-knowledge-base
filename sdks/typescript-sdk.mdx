@@ -1,0 +1,61 @@
+---
+title: TypeScript SDK
+description: A thin, dependency-free REST wrapper published as @autopil/sdk using native fetch.
+---
+
+## TypeScript SDK
+
+A thin REST API wrapper published as `@autopil/sdk`. Zero runtime dependencies — uses native `fetch` (Node 18+).
+
+```bash title="terminal"
+npm install @autopil/sdk
+```
+
+Set your Render URL and API key as environment variables, then pass them to the client. Get your key from the dashboard under Settings → API Keys (`evaluate` scope for agent code).
+
+```typescript title="client usage"
+import { AutoPilClient } from "@autopil/sdk"
+
+const client = new AutoPilClient({
+  baseUrl: process.env.AUTOPIL_BASE_URL!,  // https://your-app.onrender.com
+  apiKey:  process.env.AUTOPIL_API_KEY!,
+})
+
+// Evaluate a retrieval request
+const result = await client.context.evaluate({
+  agent_role:        "loan_underwriter",
+  source_id:         "credit_scores",
+  user_id:           "user_001",
+  sensitivity_level: "high",
+  session_id:        "sess_abc",
+})
+
+if (result.decision === "DENY") {
+  throw new Error(result.reason)
+}
+
+// Query audit events
+const events = await client.audit.listEvents({
+  agent_role: "loan_underwriter",
+  decision:   "DENY",
+  limit:      50,
+})
+```
+
+## Client resources
+
+| Resource | Methods |
+|---|---|
+| `client.context` | `evaluate()` |
+| `client.sessions` | `list()`, `get()`, `revoke()` |
+| `client.audit` | `getSession()`, `listEvents()`, `getStats()` |
+| `client.lineage` | `record()`, `get()` |
+| `client.policies` | `list()`, `create()`, `update()`, `delete()`, `reload()`, `getHistory()` |
+| `client.alerts` | `createRule()`, `listRules()`, `updateRule()`, `deleteRule()`, `listFired()` |
+| `client.keys` | `create()`, `list()`, `revoke()` |
+| `client.admin` | `createTenant()`, `listTenants()`, `deactivateTenant()` |
+| `client.health()` | — no auth required |
+
+<Callout kind="info">
+  `AutoPilError` is thrown for non-2xx responses and carries `statusCode` and `detail` from the server.
+</Callout>

@@ -1,0 +1,31 @@
+---
+title: Authentication
+description: All /v1/* routes require an API key in the X-API-Key header.
+---
+
+## Authentication
+
+All `/v1/*` routes require an API key in the `X-API-Key` header. The server returns HTTP 401 if the key is missing and 403 if it is invalid or revoked.
+
+```bash title="All authenticated requests"
+curl https://api.autopil.ai/v1/... \
+  -H "X-API-Key: apl_yourkey"
+```
+
+<ParamField header="X-API-Key" param-type="string" required="true">
+  Your API key (`apl_...`). Scopes: `admin` (all endpoints), `read` (GET + evaluate), or `evaluate` (`POST /v1/context/evaluate` only). Use the least-privilege `evaluate` scope for agent runtimes.
+</ParamField>
+
+<Callout kind="info">
+  The `GET /health` endpoint is the only route that does not require a key. Use it for liveness probes before wiring up authenticated calls.
+</Callout>
+
+## Key scopes
+
+| Scope | Access | Use case |
+|---|---|---|
+| `admin` | All endpoints | Dashboard, policy management, key management |
+| `read` | GET + evaluate | Monitoring, audit review, read-only integrations |
+| `evaluate` | `POST /v1/context/evaluate` only | Agent runtime — least privilege for production agents |
+
+See the [Endpoints](/api-reference/openapi) reference for the full list of operations, request parameters, and an interactive playground.

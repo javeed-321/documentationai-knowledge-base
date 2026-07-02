@@ -1,0 +1,54 @@
+---
+title: Architecture
+description: Where AutoPIL sits in your stack, and the ten steps every protected retrieval executes.
+---
+
+## Architecture
+
+AutoPIL fills the governance gap between your data sources and your agents. Existing tools govern upstream (data catalogs, access management) or downstream (output filters). AutoPIL governs *retrieval* — the moment an agent queries a vector store, database, or API to ground its response.
+
+## Enforcement flow
+
+Every `@guard.protect()` call executes ten steps in order:
+
+<Steps>
+  <Step title="Agent identity binding check" icon="fingerprint">
+    If `agent_id` is supplied, it is validated against the agent registry. Draft and deprecated agents are denied. The agent's `permitted_roles` must include the claimed role. If the calling key has a `bound_agent_id`, the `agent_id` in the request must match. Requests without `agent_id` skip this step entirely.
+  </Step>
+
+  <Step title="Cross-agent session isolation" icon="split">
+    The first agent role to use a `session_id` owns it. Any other role attempting the same session is immediately denied and logged with `policy_name="cross_agent_isolation"`.
+  </Step>
+
+  <Step title="Session lifecycle check" icon="clock">
+    Sessions that are expired or revoked are denied before policy evaluation runs. Status values: `active`, `expired`, `revoked`.
+  </Step>
+
+  <Step title="Policy evaluation" icon="shield">
+    The `PolicyEngine` checks `permitted_agent_ids`, denied sources, denied tasks, allowed tasks, allowed sources, and sensitivity ceiling in order. No matching policy defaults to deny.
+  </Step>
+
+  <Step title="OTEL span emitted" icon="activity">
+    An `autopil.evaluate` span is started. Decision, latency, and policy name are recorded. DENY sets `StatusCode.ERROR` on the span.
+  </Step>
+
+  <Step title="Retrieval executes (ALLOW only)" icon="database">
+    The wrapped function runs. On DENY, the data source is never queried.
+  </Step>
+
+  <Step title="Context hashing (ALLOW only)" icon="hash">
+    A SHA-256 hash of the returned context is computed (first 16 hex chars stored) for provenance verification.
+  </Step>
+
+  <Step title="Audit event recorded" icon="file-text">
+    Every decision — allow or deny — is written with policy name, reason, context hash, agent_id, and timestamp. Append-only; no delete API.
+  </Step>
+
+  <Step title="Alert rules evaluated" icon="bell">
+    The `AlertEngine` checks threshold rules against the audit log. Webhook and email delivery is dispatched in a background thread.
+  </Step>
+
+  <Step title="PermissionError raised (DENY only)" icon="ban">
+    The caller receives a `PermissionError` with the policy name and denial reason.
+  </Step>
+</Steps>

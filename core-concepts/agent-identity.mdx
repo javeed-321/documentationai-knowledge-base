@@ -1,0 +1,63 @@
+---
+title: Agent Identity
+description: Cryptographic identity binding so only a specific registered, approved agent can evaluate.
+---
+
+## Agent identity
+
+By default, AutoPIL trusts the `agent_role` supplied at decoration time — a structural guarantee that is sufficient for most single-agent pipelines. For multi-agent systems where agents are autonomous or long-running, you can add cryptographic identity binding so that only a specific registered, approved agent instance can make a given evaluation call.
+
+## How it works
+
+Agent identity has three independent layers, each building on the previous:
+
+| Layer | Where it's configured | What it enforces |
+|---|---|---|
+| Registry approval | Agent registry (dashboard or API) | Only agents with `status=approved` may evaluate. Draft and deprecated agents are denied with `policy_name="agent_not_approved"`. |
+| Role restriction | `permitted_roles` on the registry entry | An agent can only claim roles listed in its own `permitted_roles`. Prevents role escalation across agent types. |
+| Key binding | `bound_agent_id` / `permitted_roles` on the API key | A key bound to an agent rejects any request from a different agent. A key with `permitted_roles` rejects claims for roles not in the list. |
+| Policy-level agent IDs | `permitted_agent_ids` in YAML policy | A policy can require that only named agents (exact match or wildcard) may evaluate against it. Useful for locking a high-sensitivity role to a specific production agent. |
+
+<Callout kind="info">
+  Backward compatible. All identity fields are optional. Existing agents that omit `agent_id` are completely unaffected — the binding checks only run when `agent_id` is present in the request or when the calling key has `bound_agent_id` set.
+</Callout>
+
+## Tenant-level enforcement: require agent_id on all calls
+
+For tenants where every AI agent must be registered and identified, you can make `agent_id` mandatory at the tenant level. Anonymous evaluate calls (no `agent_id`) are denied immediately with `policy_name="agent_id_required"` before any other checks run. Two ways to enable this:
+
+- **Global (all tenants):** Set `AUTOPIL_REQUIRE_AGENT_ID=1` as a server environment variable. Takes effect on restart.
+- **Per tenant:** Call `PATCH /v1/admin/tenants/{tenant_id}/settings` with `{"require_agent_id": true}`. Takes effect immediately, no restart needed.
+
+```bash title="enable per-tenant agent_id enforcement"
+curl -X PATCH https://api.autopil.ai/v1/admin/tenants/{tenant_id}/settings \
+  -H "X-API-Key: $SUPERADMIN_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"require_agent_id": true}'
+```
+
+Once enabled, the effective rule is: `AUTOPIL_REQUIRE_AGENT_ID=1 OR tenant.require_agent_id=true`. The SDK path (`Guard(require_agent_id=True)`) enforces the same rule without an API call, useful for local development or single-tenant deployments.
+
+## Typical approval workflow
+
+<Steps>
+  <Step title="Register" icon="plus">
+    Developer registers the agent via `POST /v1/agents`. Status starts as `draft`.
+  </Step>
+
+  <Step title="Approve" icon="check">
+    Data governance team transitions to `approved` via `PATCH /v1/agents/{agent_id}/status`. Only approved agents may evaluate.
+  </Step>
+
+  <Step title="Bind key" icon="link">
+    Create or bind an `evaluate`-scoped API key to this agent via `PATCH /v1/keys/{key_id}/binding`. Now only this key can present this agent's ID.
+  </Step>
+
+  <Step title="Deploy" icon="rocket">
+    The agent runtime passes `agent_id` in every evaluate call. Audit events are stamped with the agent ID — full traceability from retrieval back to the specific agent instance.
+  </Step>
+
+  <Step title="Deprecate" icon="archive">
+    When an agent is retired, transition to `deprecated`. All subsequent evaluate calls from that agent ID are denied with no code changes required.
+  </Step>
+</Steps>

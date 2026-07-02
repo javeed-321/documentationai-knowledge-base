@@ -1,0 +1,34 @@
+---
+title: Local Development
+description: Run the backend and dashboard from the monorepo in two terminals.
+---
+
+## Local development
+
+The repo is a monorepo. The backend lives in `packages/core` and the dashboard in `packages/dashboard`. Run them in two terminals:
+
+```bash title="Terminal 1 — backend (Python 3.11+)"
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e "packages/core[server,postgres]"
+pip install -e "packages/saas[catalog]"
+
+# Build the dashboard
+cd packages/dashboard && npm install && npm run build
+cp -r dist/* ../core/autopil/api/static/ && cd ../..
+
+# Start (full stack)
+AUTOPIL_DB=./autopil_audit.db \
+AUTOPIL_POLICY=./policies \
+AUTOPIL_SECRET_KEY=local-dev-secret \
+AUTOPIL_RESET_ADMIN_KEY=1 \
+autopil-saas-serve
+```
+
+## Server flags (core edition)
+
+| Flag | Default | Description |
+|---|---|---|
+| `--policy` | `policies/` | Path to policy file or directory |
+| `--db` | `autopil_audit.db` | SQLite audit DB path |
+| `--host` | `0.0.0.0` | Bind host |
+| `--port` | `8000` | Listen port |

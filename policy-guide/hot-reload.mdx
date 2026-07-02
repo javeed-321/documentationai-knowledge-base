@@ -1,0 +1,16 @@
+---
+title: Hot Reload
+description: Reload all policies from disk without restarting the server or interrupting agents in flight.
+---
+
+## Hot reload
+
+Reload all policies from disk without restarting the server or interrupting agents in flight:
+
+```bash title="terminal"
+curl -X POST http://localhost:8000/v1/policies/reload \
+  -H "X-API-Key: apl_yourkey"
+# → { "loaded": 45, "policies_count": 45 }
+```
+
+You can also manage policies via the REST API — create, update, and delete individual policies without touching YAML files. DB-managed and file-loaded policies coexist.

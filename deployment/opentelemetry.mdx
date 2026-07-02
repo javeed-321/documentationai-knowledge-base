@@ -1,0 +1,22 @@
+---
+title: OpenTelemetry
+description: Emit spans and metrics to Datadog, Grafana Cloud, or the local console.
+---
+
+## OpenTelemetry
+
+Activated by setting `OTEL_EXPORTER_OTLP_ENDPOINT`. When unset, the telemetry module is a complete no-op — no spans, no metrics, no overhead.
+
+```bash title="Environment variables"
+# Datadog
+export OTEL_SERVICE_NAME=autopil
+export OTEL_EXPORTER_OTLP_ENDPOINT=https://api.datadoghq.com/api/intake/otlp/v1
+export OTEL_EXPORTER_OTLP_HEADERS="DD-API-KEY=your_key"
+
+# Grafana Cloud
+export OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp-gateway-prod-us-east-0.grafana.net/otlp
+export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Basic <base64>"
+
+# Local console (no collector needed)
+export OTEL_TRACES_EXPORTER=console
+```

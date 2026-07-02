@@ -1,0 +1,27 @@
+---
+title: Agent ID Binding
+description: Lock a policy to specific registered agent instances with permitted_agent_ids.
+---
+
+## Agent ID binding in policies
+
+Add `permitted_agent_ids` to a policy to lock it to specific registered agent instances. This is a policy-level complement to registry approval — useful when you want a single high-sensitivity role usable only by a named production agent, even if other agents share the same role name.
+
+```yaml title="Restrict a policy to specific agent IDs"
+# policies/financial_services/fraud_investigation.yaml
+policies:
+  - name: transaction_analyst_policy
+    agent_role: transaction_analyst
+    permitted_agent_ids:          # only these agent IDs may use this policy
+      - fraud-analyst-prod         # exact match
+      - fraud-analyst-*            # fnmatch wildcard — matches fraud-analyst-v2, etc.
+    allowed_sources:
+      - transaction_history
+      - velocity_signals
+    max_sensitivity: critical
+    session_ttl_minutes: 60
+```
+
+<Callout kind="warning">
+  Anonymous calls are denied when `permitted_agent_ids` is set. Any evaluate call that omits `agent_id` is denied with `policy_name="transaction_analyst_policy"` and reason "anonymous calls are not permitted". This is intentional — once you lock a policy to specific agents, all callers must identify themselves.
+</Callout>

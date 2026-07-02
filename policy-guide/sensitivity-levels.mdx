@@ -1,0 +1,31 @@
+---
+title: Sensitivity & Task Scoping
+description: The four-level sensitivity ladder and how to restrict a role to specific task categories.
+---
+
+## Sensitivity levels
+
+Ordered from least to most sensitive: `low < medium < high < critical`
+
+| Level | Typical data |
+|---|---|
+| `low` | Public product catalogs, FAQ knowledge bases, public filings |
+| `medium` | Account summaries, transaction history, standard reports |
+| `high` | Credit scores, identity records, loan history, PII |
+| `critical` | Regulatory filings, internal risk models, audit logs, board communications |
+
+## Task scoping
+
+Task scoping restricts a role to specific categories of work. Pass `task_type` in evaluate requests and define `allowed_tasks` / `denied_tasks` in the policy:
+
+```python title="guard call with task_type"
+@guard.protect(
+    agent_role="loan_underwriter",
+    user_id="user_001",
+    source_id="credit_scores",
+    sensitivity_level=SensitivityLevel.HIGH,
+    task_type="credit_decision",  # checked against allowed_tasks / denied_tasks
+    session_id=session_id,
+)
+def get_credit_score(customer_id: str) -> dict: ...
+```

@@ -1,0 +1,58 @@
+---
+title: Java SDK
+description: A Jackson-only REST client published as ai.vibrantcapital:autopil-java.
+---
+
+## Java SDK
+
+A Jackson-only REST client published as `ai.vibrantcapital:autopil-java:0.1.0`. Uses `java.net.http.HttpClient` (no external HTTP library). Requires Java 17+.
+
+Set `AUTOPIL_BASE_URL` and `AUTOPIL_API_KEY` as environment variables. Get your key from the dashboard under Settings → API Keys (`evaluate` scope for agent code).
+
+```xml title="pom.xml"
+<dependency>
+  <groupId>ai.vibrantcapital</groupId>
+  <artifactId>autopil-java</artifactId>
+  <version>0.1.0</version>
+</dependency>
+```
+
+```java title="Usage.java"
+AutoPILClient client = AutoPILClient.builder()
+    .baseUrl(System.getenv("AUTOPIL_BASE_URL"))  // https://your-app.onrender.com
+    .apiKey(System.getenv("AUTOPIL_API_KEY"))
+    .build();
+
+// Evaluate a retrieval request
+EvaluateResponse resp = client.context().evaluate(
+    EvaluateRequest.builder()
+        .agentRole("loan_underwriter")
+        .userId("user_001")
+        .sourceId("credit_scores")
+        .sensitivityLevel("high")
+        .sessionId(sessionId)
+        .build()
+);
+
+if ("DENY".equals(resp.getDecision())) {
+    throw new SecurityException(resp.getReason());
+}
+
+// Query audit events
+AuditTrail trail = client.audit().getSession(sessionId);
+List<AuditEvent> events = client.audit().listEvents("loan_underwriter", "DENY", 50);
+```
+
+## Client resources
+
+| Resource | Methods |
+|---|---|
+| `client.context()` | `evaluate(EvaluateRequest)` |
+| `client.audit()` | `getSession()`, `listEvents()`, `getStats()`, `recordLineage()` |
+| `client.sessions()` | `list()`, `get()`, `revoke()` |
+| `client.policies()` | `list()`, `create()`, `update()`, `delete()`, `reload()` |
+| `client.health()` | — no auth required |
+
+<Callout kind="info">
+  `AutoPILException` (unchecked) carries `getStatusCode()` and `getDetail()`. All request types use the builder pattern. A JUnit 5 test suite is included.
+</Callout>

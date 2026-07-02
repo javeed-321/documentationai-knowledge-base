@@ -1,0 +1,142 @@
+---
+title: Framework Integrations
+description: Native guard subclasses for LangChain, LlamaIndex, Gemini, OpenAI Agents, and Bedrock.
+---
+
+## Framework integrations
+
+AutoPIL ships native guard subclasses for the five major agent frameworks. Each sets a distinct `source_type` so the dashboard can break down access by framework.
+
+<Tabs>
+  <Tab title="LangChain" icon="link">
+    ```python title="langchain_agent.py"
+    from autopil.langchain_guard import LangChainGuard
+    from langchain_core.tools import tool
+
+    guard = LangChainGuard(policy_path="policies/")
+
+    @tool
+    @guard.protect(
+        agent_role="research_analyst", user_id="u1",
+        source_id="market_data", sensitivity_level=SensitivityLevel.MEDIUM,
+        session_id=session_id,
+    )
+    def get_market_data(ticker: str) -> dict:
+        return data_api.fetch(ticker)
+    # source_type="langchain" — works with LCEL and LangChain agents
+    ```
+  </Tab>
+
+  <Tab title="LlamaIndex" icon="database">
+    ```python title="llamaindex_agent.py"
+    from autopil.llamaindex_guard import LlamaIndexGuard
+
+    guard = LlamaIndexGuard(policy_path="policies/")
+
+    @guard.protect(
+        agent_role="document_analyst", user_id="u1",
+        source_id="legal_contracts", sensitivity_level=SensitivityLevel.HIGH,
+        session_id=session_id,
+    )
+    def retrieve_contract(clause: str) -> str:
+        return index.as_query_engine().query(clause)
+    # source_type="llamaindex" — wraps query engines and retrievers
+    ```
+  </Tab>
+
+  <Tab title="Gemini" icon="sparkles">
+    ```python title="gemini_agent.py"
+    from autopil.gemini_guard import GeminiGuard
+
+    guard = GeminiGuard(policy_path="policies/")
+
+    @guard.protect(
+        agent_role="content_reviewer", user_id="u1",
+        source_id="internal_docs", sensitivity_level=SensitivityLevel.MEDIUM,
+        session_id=session_id,
+    )
+    def fetch_document(doc_id: str) -> str:
+        return docs_api.get(doc_id)
+    # source_type="gemini" — wraps functions called from Gemini function-calling agents
+    ```
+  </Tab>
+
+  <Tab title="OpenAI Agents" icon="bot">
+    ```python title="openai_agent.py"
+    from autopil.openai_agents_guard import OpenAIAgentsGuard
+    from agents import function_tool
+
+    guard = OpenAIAgentsGuard(policy_path="policies/")
+
+    @function_tool
+    @guard.protect(
+        agent_role="compliance_checker", user_id="u1",
+        source_id="regulatory_filings", sensitivity_level=SensitivityLevel.RESTRICTED,
+        session_id=session_id,
+    )
+    def get_filing(filing_id: str) -> dict:
+        return filings_db.fetch(filing_id)
+    # source_type="openai_agents"
+    ```
+  </Tab>
+
+  <Tab title="Bedrock" icon="cloud">
+    ```python title="bedrock_agent.py — sync (boto3)"
+    import boto3
+    from autopil.bedrock_guard import BedrockGuard
+
+    guard = BedrockGuard(policy_path="policies/")
+    boto_client = boto3.client("bedrock-agent-runtime")
+
+    # Wrap the client — guard extracts inputText as the policy query
+    client = guard.wrap_invoke_agent(
+        boto_client,
+        agent_role="compliance_agent", user_id="u1",
+        source_id="regulatory_data", sensitivity_level=SensitivityLevel.HIGH,
+        session_id=session_id,
+    )
+
+    response = client.invoke_agent(
+        agentId="ABCDEF123", agentAliasId="TSTALIASID",
+        sessionId=session_id,
+        inputText="Summarize Q1 compliance filings",
+    )
+    # source_type="bedrock" — ALLOW runs the call; DENY raises PermissionError
+    ```
+
+    ```python title="bedrock_agent_async.py — async (aioboto3)"
+    import aioboto3
+    from autopil.bedrock_guard import BedrockGuard
+
+    guard = BedrockGuard(policy_path="policies/")
+
+    async with aioboto3.Session().client("bedrock-agent-runtime") as boto_client:
+        client = guard.wrap_invoke_agent_async(
+            boto_client,
+            agent_role="compliance_agent", user_id="u1",
+            source_id="regulatory_data", sensitivity_level=SensitivityLevel.HIGH,
+            session_id=session_id,
+        )
+        response = await client.invoke_agent(
+            agentId="ABCDEF123", agentAliasId="TSTALIASID",
+            sessionId=session_id,
+            inputText="Summarize Q1 compliance filings",
+        )
+    ```
+  </Tab>
+</Tabs>
+
+## Integration channel reference
+
+| Guard class | source_type | Use case |
+|---|---|---|
+| `ContextGuard` | `sdk` | Python microservices, notebooks, sync agents |
+| `ContextGuard.protect_async` | `sdk` | Async Python agents (asyncio, FastAPI) |
+| `AutoPILMiddleware` | `api` | FastAPI / Starlette HTTP-layer enforcement |
+| MCP server | `mcp` | Claude Desktop, any MCP-compatible agent |
+| REST API directly | `rest` | Go, Java, Ruby, PHP, .NET clients |
+| `LangChainGuard` | `langchain` | LangChain agents, tools, LCEL pipelines |
+| `LlamaIndexGuard` | `llamaindex` | LlamaIndex query engines and retrievers |
+| `GeminiGuard` | `gemini` | Google Gemini function-calling agents |
+| `OpenAIAgentsGuard` | `openai_agents` | OpenAI Agents SDK function tools |
+| `BedrockGuard` | `bedrock` | AWS Bedrock Agents via boto3 / aioboto3 |

@@ -1,0 +1,87 @@
+---
+title: MCP Server
+description: Expose AutoPIL governance as native tools for any MCP-compatible agent — no code changes.
+---
+
+## MCP Server
+
+AutoPIL ships an MCP (Model Context Protocol) server that exposes context governance as native tools for any MCP-compatible AI agent — Claude, GPT-4, Gemini, or any custom agent that speaks MCP. No code changes in the agent. The governance layer sits between the model and your data.
+
+```bash title="Install"
+pip install autopil[mcp]
+```
+
+```bash title="Start the server"
+autopil-mcp --policy policies/ --db autopil.db
+
+# or with Postgres:
+export DATABASE_URL=postgresql://user:pass@host:5432/autopil
+autopil-mcp --policy policies/
+```
+
+```json title="~/Library/Application Support/Claude/claude_desktop_config.json"
+{
+  "mcpServers": {
+    "autopil": {
+      "command": "autopil-mcp",
+      "args": ["--policy", "/path/to/policies/", "--db", "/path/to/autopil.db"],
+      "env": {}
+    }
+  }
+}
+```
+
+Restart Claude Desktop. AutoPIL's tools will appear in the tool list automatically.
+
+## Available tools
+
+| Tool | Description |
+|---|---|
+| `evaluate_context` | Policy check before retrieval — returns ALLOW or DENY with reason and `event_id` |
+| `record_action` | Link a downstream decision to the audit event that authorized it (lineage) |
+| `query_audit_log` | Query recent audit events, filterable by role, decision, or session |
+| `get_audit_stats` | Aggregate stats — totals, deny rate, top roles |
+| `list_policies` | List active policies, filterable by industry or agent_role |
+| `reload_policies` | Hot-reload policies from disk without restarting |
+| `get_session_status` | Session summary — owner, event count, sources accessed |
+
+## System prompt pattern
+
+Add this to your agent's system prompt so governance is enforced automatically:
+
+```text title="system prompt"
+Before accessing any data source, you MUST call evaluate_context with:
+- agent_role: your role in this conversation
+- user_id: the current user's ID
+- source_id: the data source you want to access
+- sensitivity_level: the sensitivity of that data
+- session_id: a consistent ID for this conversation
+
+Only proceed if decision is ALLOW. If DENY, inform the user and provide the reason.
+After a successful retrieval, call record_action with the event_id.
+```
+
+## Tool responses
+
+```text title="evaluate_context — ALLOW response"
+✅ ALLOW — loan_underwriter may access 'credit_scores'.
+Policy: loan_underwriter_policy
+Event ID: evt_abc123 (use this in record_action to log what you did with the data)
+```
+
+```text title="evaluate_context — DENY response"
+🚫 DENY — loan_underwriter is not permitted to access 'executive_communications'.
+Reason: source 'executive_communications' is on denylist for role 'loan_underwriter'
+Policy: loan_underwriter_policy
+Do not proceed with this retrieval. Inform the user that access is not permitted.
+```
+
+Cross-agent isolation is enforced automatically. If a `fraud_analyst` agent tries to access a session owned by `loan_underwriter`:
+
+```text title="cross-agent isolation DENY"
+🚫 DENY — fraud_analyst is not permitted to access session 'sess_abc12…'.
+Reason: Session is owned by 'loan_underwriter'. Agent 'fraud_analyst' cannot access another agent's session context.
+Policy: cross_agent_isolation
+```
+
+This happens without any configuration — it's built into the `evaluate_context` tool.

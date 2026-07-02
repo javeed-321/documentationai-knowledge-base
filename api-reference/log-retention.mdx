@@ -1,0 +1,52 @@
+---
+title: Log Retention
+description: How audit events and session records are purged, and how to inspect the chain anchor.
+---
+
+## Log retention
+
+Retention is configured per tenant from Settings → Retention in the dashboard. Defaults are **365 days** for audit events and **90 days** for session records. The purge workers run once at server startup then every 24 hours.
+
+The retention endpoints — `GET /v1/settings/retention`, `PUT /v1/settings/retention`, and `GET /v1/audit/retention` — are documented in the [Endpoints](/api-reference/openapi) reference. Their behavior:
+
+- Either field on `PUT /v1/settings/retention` is optional — omit one to leave it unchanged. Set a value to `0` to disable automatic purge for that data type.
+- Reducing retention permanently deletes records older than the new window on the next nightly cycle.
+
+```json title="GET /v1/settings/retention — response"
+{
+  "retention_days":         365,
+  "session_retention_days": 90,
+  "audit_policy":           "Audit events older than 365 days are automatically purged daily.",
+  "session_policy":         "Expired and revoked sessions older than 90 days are purged daily."
+}
+```
+
+## Chain anchor
+
+Call `GET /v1/audit/retention` to inspect the last purge anchor for chain integrity:
+
+```json title="GET /v1/audit/retention — response"
+{
+  "retention_days": 365,
+  "policy": "Audit events older than 365 days are automatically purged daily.",
+  "anchor": {
+    "anchor_hash":   "a3f8c1d2...",
+    "purged_before": "2025-03-30T00:00:00",
+    "purged_count":  142
+  }
+}
+```
+
+`anchor` is `null` if no purge has run yet. Once set, auditors can confirm the chain is intact from the anchor forward by calling `GET /v1/audit/verify`.
+
+## Session retention
+
+Session records are purged separately from audit events. Only **expired or revoked** sessions older than `session_retention_days` are deleted — active sessions are never purged. The default is 90 days. Configure it from Settings → Retention alongside audit retention.
+
+## Configuring retention in production
+
+Retention is configured per tenant from the dashboard under Settings → Retention — no environment variable changes required. Both purge workers start automatically and run every 24 hours. To change retention, open the Settings tab, update either value, and click Save. A confirmation prompt appears when reducing either window — the deletion is permanent and runs on the next nightly cycle.
+
+<Callout kind="info">
+  The `AUDIT_RETENTION_DAYS` environment variable sets a system-wide fallback but is superseded by per-tenant settings once configured.
+</Callout>

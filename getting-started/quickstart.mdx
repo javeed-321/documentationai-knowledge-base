@@ -1,0 +1,75 @@
+---
+title: Quick Start
+description: Install AutoPIL, point it at a policy directory, and protect your first retrieval function.
+---
+
+## Quick start
+
+AutoPIL is a retrieval-layer governance engine for autonomous AI agents. Install the Python package, point it at a policy directory, and wrap your retrieval functions with `@guard.protect()`.
+
+## Installation
+
+```bash title="terminal"
+# Base install (SQLite backend)
+pip install autopil
+
+# With Postgres support
+pip install autopil[postgres]
+
+# With OpenTelemetry (gRPC exporter)
+pip install autopil[otel]
+
+# With OpenTelemetry (HTTP exporter — Grafana Cloud)
+pip install autopil[otel-http]
+
+# All dev dependencies (tests, linting)
+pip install autopil[dev]
+```
+
+Protect your first retrieval function:
+
+```python title="retrieval.py"
+from autopil import ContextGuard, SensitivityLevel
+
+# Point at a policy file or directory
+guard = ContextGuard(
+    policy_path="policies/",
+    audit_db="autopil.db",
+)
+
+@guard.protect(
+    agent_role="loan_underwriter",
+    user_id="user_001",
+    source_id="credit_scores",
+    sensitivity_level=SensitivityLevel.HIGH,
+    session_id=session_id,
+)
+def get_credit_score(customer_id: str) -> dict:
+    return credit_db.query(customer_id)
+
+# ALLOW — policy matched, audit event logged, OTEL span emitted
+score = get_credit_score("cust_abc")
+
+# DENY — raises PermissionError, denial logged, alert rules checked
+# source='executive_comms' is on the denylist for this role
+```
+
+## Next steps
+
+<Columns cols={2}>
+  <Card title="First-Start Bootstrap" href="/getting-started/first-start" icon="power" horizontal={false}>
+    Run the API server and capture your superadmin key.
+  </Card>
+
+  <Card title="Architecture" href="/core-concepts/architecture" icon="network" horizontal={false}>
+    Understand where AutoPIL sits and how enforcement runs.
+  </Card>
+
+  <Card title="Policy File Format" href="/policy-guide/policy-format" icon="file-code" horizontal={false}>
+    Write the YAML policies that drive every decision.
+  </Card>
+
+  <Card title="Choosing an Integration Pattern" href="/sdks/integration-patterns" icon="git-branch" horizontal={false}>
+    Decide between the embedded decorator and the REST API.
+  </Card>
+</Columns>

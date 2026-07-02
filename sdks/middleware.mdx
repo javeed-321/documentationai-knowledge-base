@@ -1,0 +1,55 @@
+---
+title: ASGI Middleware
+description: Enforce access policy at the HTTP layer for FastAPI and Starlette apps — before your handler runs.
+---
+
+## ASGI Middleware
+
+`AutoPILMiddleware` enforces access policy at the HTTP layer for FastAPI and Starlette apps — before your route handler runs. Each `RouteRule` maps a URL pattern to a policy check.
+
+```python title="main.py"
+from fastapi import FastAPI
+from autopil.middleware import AutoPILMiddleware, RouteRule
+from autopil import ContextGuard, SensitivityLevel
+
+guard = ContextGuard(policy_path="policies/")
+
+app = FastAPI()
+app.add_middleware(
+    AutoPILMiddleware,
+    guard=guard,
+    rules=[
+        RouteRule(
+            path_pattern=r"^/api/credit/.*",
+            agent_role="loan_underwriter",
+            user_id_header="X-User-ID",
+            source_id="credit_scores",
+            sensitivity_level=SensitivityLevel.HIGH,
+            on_deny="reject",          # or "log" for shadow mode
+        ),
+        RouteRule(
+            path_pattern=r"^/api/reports/.*",
+            agent_role="analyst",
+            user_id_header="X-User-ID",
+            source_id="reports",
+            sensitivity_level=SensitivityLevel.MEDIUM,
+            on_deny="log",             # shadow mode — log but allow through
+        ),
+    ],
+)
+```
+
+## RouteRule parameters
+
+| Parameter | Type | Description |
+|---|---|---|
+| `path_pattern` | str (regex) | Regex matched against the request path. First matching rule wins. |
+| `agent_role` | str | Role used for policy evaluation. |
+| `user_id_header` | str | HTTP header name from which to extract `user_id` (e.g. `X-User-ID`). |
+| `source_id` | str | Data source label evaluated against the policy. |
+| `sensitivity_level` | SensitivityLevel | Sensitivity of the data behind this route. |
+| `on_deny` | str | `"reject"` (default) returns HTTP 403. `"log"` logs the denial but allows the request through (shadow mode). |
+
+<Callout kind="info">
+  Source type: All events from the middleware are stamped `source_type="api"`, regardless of which guard subclass is in use. This lets the dashboard distinguish HTTP-layer enforcement from SDK-level enforcement.
+</Callout>

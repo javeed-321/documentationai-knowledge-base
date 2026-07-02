@@ -1,0 +1,22 @@
+---
+title: Postgres
+description: Run AutoPIL against Postgres for the Full Stack or Core edition.
+---
+
+## Postgres
+
+```bash title="Postgres setup"
+# Full Stack edition
+pip install "autopil-saas[catalog]"
+export DATABASE_URL=postgresql://user:pass@host:5432/autopil
+export AUTOPIL_SECRET_KEY=your-secret
+export AUTOPIL_POLICY=./policies
+autopil-saas-serve
+
+# Core edition
+pip install "autopil[server,postgres]"
+export DATABASE_URL=postgresql://user:pass@host:5432/autopil
+autopil-serve --policy policies/
+```
+
+Schema is created automatically on first start. Subsequent starts run `ALTER TABLE … ADD COLUMN IF NOT EXISTS` migration guards — safe to run against existing databases. The `docker-compose.yml` starts `postgres:16-alpine` and wires `DATABASE_URL` automatically.

@@ -1,0 +1,79 @@
+---
+title: Policy File Format
+description: Write role definitions in YAML and scale to an industry-organized policy directory.
+---
+
+## Policy file format
+
+Policies are YAML files with a single top-level `policies` key containing a list of role definitions. Multiple roles live in the same file.
+
+```yaml title="policies/financial_services/consumer_banking.yaml"
+policies:
+  - name: loan_underwriter_policy
+    agent_role: loan_underwriter
+    allowed_sources:
+      - credit_scores
+      - loan_history
+      - property_valuations
+      - income_verification
+    denied_sources:
+      - other_customer_data
+      - internal_risk_models
+      - executive_communications
+    allowed_tasks:
+      - credit_decision
+      - collateral_check
+      - risk_assessment
+    denied_tasks:
+      - account_freeze
+      - fraud_flag
+    max_sensitivity: high
+    session_ttl_minutes: 240        # optional: overrides global server TTL
+    sensitivity_decay:               # optional: tightens ceiling as session ages
+      - after_minutes: 60
+        max_sensitivity: medium
+      - after_minutes: 120
+        max_sensitivity: low
+
+  - name: fraud_analyst_policy
+    agent_role: fraud_analyst
+    allowed_sources:
+      - transaction_history
+      - device_signals
+      - watchlist
+    denied_sources:
+      - executive_communications
+      - internal_risk_models
+    max_sensitivity: high
+```
+
+## Directory structure
+
+Scale beyond a single file with an industry-organized directory. AutoPIL recursively loads all `*.yaml` files and injects `industry` and `process_group` metadata automatically from the path — no additional YAML fields required.
+
+```text title="policies/"
+policies/
+  financial_services/
+    consumer_banking.yaml    # 4 roles
+    wealth.yaml              # 4 roles
+    risk_compliance.yaml     # 4 roles
+    operations.yaml          # 4 roles
+  healthcare/
+    clinical_operations.yaml # 4 roles
+    compliance_privacy.yaml  # 3 roles
+    revenue_cycle.yaml       # 4 roles
+  technology/
+    saas_platform.yaml       # 5 roles
+  telecom/
+    network_operations.yaml  # 3 roles
+    fraud_assurance.yaml     # 3 roles
+    customer_experience.yaml # 3 roles
+  logistics/
+    supply_chain.yaml        # 3 roles
+    fleet_operations.yaml    # 3 roles
+    customs_compliance.yaml  # 3 roles
+```
+
+<Callout kind="info">
+  Path-based metadata injection: When loading from a directory, `industry` is set from the first path component and `process_group` from the YAML filename stem. Explicit values in the YAML always take precedence.
+</Callout>

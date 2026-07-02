@@ -1,0 +1,26 @@
+---
+title: Docker
+description: Build and run AutoPIL with SQLite, persistent volumes, or Docker Compose.
+---
+
+## Docker
+
+```bash title="Build and run"
+# Build
+docker build -t autopil:latest .
+
+# Run with SQLite (minimal)
+docker run -p 8000:8000 -e AUTOPIL_SECRET_KEY=your-secret autopil:latest
+
+# Run with persistent data and custom policies
+docker run -d \
+  --name autopil \
+  -p 8000:8000 \
+  -v $(pwd)/policies:/app/policies:ro \
+  -v autopil-data:/data \
+  -e AUTOPIL_SECRET_KEY=your-secret \
+  autopil:latest
+
+# Docker Compose (Postgres + persistent data)
+docker compose up --build
+```

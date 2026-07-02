@@ -1,0 +1,1134 @@
+openapi: 3.0.3
+info:
+  title: AutoPIL API
+  version: "1.0.0"
+  description: >
+    REST API for AutoPIL — a retrieval-layer governance engine for autonomous AI
+    agents. Evaluate retrieval requests against policy, query the append-only audit
+    log, manage policies, alerts, sessions, API keys, and the agent registry.
+    All `/v1/*` routes require an API key in the `X-API-Key` header.
+servers:
+  - url: https://api.autopil.ai
+    description: Hosted AutoPIL API
+  - url: http://localhost:8000
+    description: Local development server
+security:
+  - apiKeyAuth: []
+tags:
+  - name: Context
+    description: Evaluate retrieval requests against policy.
+  - name: Audit
+    description: Query the append-only audit log, stats, lineage, and hash-chain integrity.
+  - name: Settings
+    description: Per-tenant retention settings.
+  - name: Policies
+    description: List, create, update, version, and reload policies.
+  - name: Alerts
+    description: Threshold-based alert rules and fired deliveries.
+  - name: Sessions
+    description: Inspect and revoke agent sessions.
+  - name: Keys
+    description: Create, list, revoke, rotate, and bind API keys.
+  - name: Agents
+    description: The agent registry — register, approve, and manage agent instances.
+  - name: Admin
+    description: Superadmin routes for tenant provisioning and enforcement settings.
+  - name: Health
+    description: Unauthenticated liveness probe.
+paths:
+  /v1/context/evaluate:
+    post:
+      tags: [Context]
+      summary: Evaluate a retrieval request
+      description: >
+        Evaluate a retrieval request against policy. Returns `ALLOW` or `DENY`
+        with the matched policy name, a human-readable reason, and an `event_id`
+        for lineage. Supplying `agent_id` enables identity binding checks.
+      operationId: evaluateContext
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateRequest'
+            example:
+              agent_role: loan_underwriter
+              user_id: user_001
+              source_id: credit_scores
+              sensitivity_level: high
+              session_id: sess_abc
+              task_type: credit_decision
+              agent_id: loan-agent-prod-01
+      responses:
+        '200':
+          description: Policy decision (ALLOW or DENY).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluateResponse'
+              examples:
+                allow:
+                  summary: ALLOW
+                  value:
+                    decision: ALLOW
+                    policy_name: loan_underwriter_policy
+                    reason: all checks passed
+                    event_id: evt_abc123
+                deny:
+                  summary: DENY
+                  value:
+                    decision: DENY
+                    policy_name: loan_underwriter_policy
+                    reason: "source 'executive_comms' is on denylist"
+                    event_id: evt_def456
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/audit/events:
+    get:
+      tags: [Audit]
+      summary: List audit events
+      description: List audit events, filterable by role, decision, and source.
+      operationId: listAuditEvents
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema: { type: integer, default: 100 }
+        - name: agent_role
+          in: query
+          required: false
+          schema: { type: string }
+        - name: decision
+          in: query
+          required: false
+          schema: { type: string, enum: [ALLOW, DENY] }
+        - name: source_id
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: A list of audit events.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/AuditEvent' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/audit/sessions/{session_id}:
+    get:
+      tags: [Audit]
+      summary: Full audit trail for a session
+      description: Return all events for a session, in order.
+      operationId: getSessionAudit
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Ordered audit trail for the session.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/AuditEvent' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/audit/stats:
+    get:
+      tags: [Audit]
+      summary: Aggregate audit stats
+      description: >
+        Aggregate stats — totals, deny rate, top roles, and a `by_source_type`
+        breakdown distinguishing SDK, API, framework, and REST traffic.
+      operationId: getAuditStats
+      responses:
+        '200':
+          description: Aggregate statistics.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuditStats' }
+              example:
+                total: 1247
+                allowed: 1118
+                denied: 129
+                by_source_type:
+                  sdk: { total: 847, allowed: 790, denied: 57 }
+                  api: { total: 203, allowed: 178, denied: 25 }
+                  langchain: { total: 87, allowed: 80, denied: 7 }
+                  bedrock: { total: 64, allowed: 58, denied: 6 }
+                  rest: { total: 46, allowed: 12, denied: 34 }
+  /v1/audit/verify:
+    get:
+      tags: [Audit]
+      summary: Verify hash-chain integrity
+      description: Verify the SHA-256 hash chain integrity for this tenant.
+      operationId: verifyAuditChain
+      responses:
+        '200':
+          description: Chain verification result.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid: { type: boolean }
+                  events_checked: { type: integer }
+  /v1/audit/retention:
+    get:
+      tags: [Audit]
+      summary: Retention policy and last purge anchor
+      description: >
+        Active retention policy and last purge anchor for this tenant. `anchor`
+        is `null` if no purge has run yet.
+      operationId: getAuditRetention
+      responses:
+        '200':
+          description: Retention policy and anchor.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuditRetention' }
+              example:
+                retention_days: 365
+                policy: Audit events older than 365 days are automatically purged daily.
+                anchor:
+                  anchor_hash: a3f8c1d2...
+                  purged_before: "2025-03-30T00:00:00"
+                  purged_count: 142
+  /v1/audit/lineage:
+    post:
+      tags: [Audit]
+      summary: Record a downstream action
+      description: Record a downstream action linked to an audit event (lineage).
+      operationId: recordLineage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LineageRecord' }
+            example:
+              event_id: evt_abc123
+              action_type: loan_decision
+              detail: { outcome: approved, amount: 250000 }
+              outcome: approved
+      responses:
+        '201':
+          description: Lineage recorded.
+  /v1/audit/lineage/{event_id}:
+    get:
+      tags: [Audit]
+      summary: Event and its downstream actions
+      description: Return the event and all linked downstream actions.
+      operationId: getLineage
+      parameters:
+        - $ref: '#/components/parameters/EventId'
+      responses:
+        '200':
+          description: Event with linked actions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  event: { $ref: '#/components/schemas/AuditEvent' }
+                  actions:
+                    type: array
+                    items: { $ref: '#/components/schemas/LineageRecord' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/settings/retention:
+    get:
+      tags: [Settings]
+      summary: Get retention settings
+      description: Return this tenant's current audit and session retention settings.
+      operationId: getRetentionSettings
+      responses:
+        '200':
+          description: Current retention settings.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RetentionSettings' }
+              example:
+                retention_days: 365
+                session_retention_days: 90
+                audit_policy: Audit events older than 365 days are automatically purged daily.
+                session_policy: Expired and revoked sessions older than 90 days are purged daily.
+    put:
+      tags: [Settings]
+      summary: Update retention settings
+      description: >
+        Update retention settings (admin-scoped key required). Either field is
+        optional — omit one to leave it unchanged. Set to `0` to disable
+        automatic purge for that data type.
+      operationId: updateRetentionSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RetentionUpdate' }
+            example:
+              retention_days: 180
+              session_retention_days: 60
+      responses:
+        '200':
+          description: Updated retention settings.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RetentionSettings' }
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/policies:
+    get:
+      tags: [Policies]
+      summary: List active policies
+      description: List active policies, filterable by industry, process group, or role.
+      operationId: listPolicies
+      parameters:
+        - name: industry
+          in: query
+          required: false
+          schema: { type: string }
+        - name: process_group
+          in: query
+          required: false
+          schema: { type: string }
+        - name: agent_role
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: A list of policies.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Policy' }
+    post:
+      tags: [Policies]
+      summary: Create a policy
+      operationId: createPolicy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Policy' }
+      responses:
+        '201':
+          description: Policy created.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Policy' }
+  /v1/policies/{policy_id}:
+    put:
+      tags: [Policies]
+      summary: Update a policy
+      description: Update a policy (saves version history, sets `user_modified`).
+      operationId: updatePolicy
+      parameters:
+        - $ref: '#/components/parameters/PolicyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Policy' }
+      responses:
+        '200':
+          description: Policy updated.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Policy' }
+    delete:
+      tags: [Policies]
+      summary: Soft-delete a policy
+      operationId: deletePolicy
+      parameters:
+        - $ref: '#/components/parameters/PolicyId'
+      responses:
+        '204':
+          description: Policy soft-deleted.
+  /v1/policies/{policy_id}/history:
+    get:
+      tags: [Policies]
+      summary: Policy version history
+      description: Full version history for a policy.
+      operationId: getPolicyHistory
+      parameters:
+        - $ref: '#/components/parameters/PolicyId'
+      responses:
+        '200':
+          description: Version history.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Policy' }
+  /v1/policies/{policy_id}/restore:
+    post:
+      tags: [Policies]
+      summary: Restore a policy
+      description: Restore a policy to its original YAML definition (clears `user_modified`).
+      operationId: restorePolicy
+      parameters:
+        - $ref: '#/components/parameters/PolicyId'
+      responses:
+        '200':
+          description: Policy restored.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Policy' }
+  /v1/policies/reload:
+    post:
+      tags: [Policies]
+      summary: Reload policies from disk
+      description: Reload all policies from disk without restart.
+      operationId: reloadPolicies
+      responses:
+        '200':
+          description: Reload result.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loaded: { type: integer }
+                  policies_count: { type: integer }
+              example:
+                loaded: 45
+                policies_count: 45
+  /v1/alerts/rules:
+    post:
+      tags: [Alerts]
+      summary: Create an alert rule
+      description: >
+        Create an alert rule. Rule types: `denial_spike`, `new_source_access`,
+        `isolation_violation`, `high_deny_rate`.
+      operationId: createAlertRule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AlertRule' }
+            example:
+              name: denial spike
+              rule_type: denial_spike
+              threshold: 10
+              window_minutes: 15
+              cooldown_minutes: 60
+              webhook_url: https://hooks.slack.com/services/...
+      responses:
+        '201':
+          description: Alert rule created.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AlertRule' }
+    get:
+      tags: [Alerts]
+      summary: List alert rules
+      operationId: listAlertRules
+      responses:
+        '200':
+          description: A list of alert rules.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/AlertRule' }
+  /v1/alerts/rules/{rule_id}:
+    put:
+      tags: [Alerts]
+      summary: Update an alert rule
+      description: Update a rule (enable/disable, thresholds).
+      operationId: updateAlertRule
+      parameters:
+        - $ref: '#/components/parameters/RuleId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AlertRule' }
+      responses:
+        '200':
+          description: Alert rule updated.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AlertRule' }
+    delete:
+      tags: [Alerts]
+      summary: Delete an alert rule
+      operationId: deleteAlertRule
+      parameters:
+        - $ref: '#/components/parameters/RuleId'
+      responses:
+        '204':
+          description: Alert rule deleted.
+  /v1/alerts/fired:
+    get:
+      tags: [Alerts]
+      summary: List fired alert deliveries
+      description: List fired alert deliveries with trigger details.
+      operationId: listFiredAlerts
+      responses:
+        '200':
+          description: Fired alert deliveries.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/FiredAlert' }
+  /v1/sessions:
+    get:
+      tags: [Sessions]
+      summary: List sessions
+      description: List sessions, filterable by role and status.
+      operationId: listSessions
+      parameters:
+        - name: agent_role
+          in: query
+          required: false
+          schema: { type: string }
+        - name: status
+          in: query
+          required: false
+          schema: { type: string, enum: [active, expired, revoked] }
+      responses:
+        '200':
+          description: A list of sessions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Session' }
+  /v1/sessions/{session_id}:
+    get:
+      tags: [Sessions]
+      summary: Session detail
+      description: Session detail and status.
+      operationId: getSession
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Session detail.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Session' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Sessions]
+      summary: Revoke a session
+      description: Revoke a session immediately.
+      operationId: revokeSession
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '204':
+          description: Session revoked.
+  /v1/keys:
+    post:
+      tags: [Keys]
+      summary: Create an API key
+      description: >
+        Create an API key — the plaintext key is returned once; store it
+        immediately. Keys support three scopes: `admin`, `read`, `evaluate`.
+      operationId: createKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/KeyCreate' }
+            example:
+              name: agent-runtime
+              scope: evaluate
+              expires_days: 90
+      responses:
+        '201':
+          description: API key created (plaintext shown once).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/KeyCreated' }
+              example:
+                key_id: key_abc123
+                name: agent-runtime
+                key: apl_...
+                scope: evaluate
+                expires_at: "2026-07-05T00:00:00"
+                created_at: "2026-04-06T00:00:00"
+    get:
+      tags: [Keys]
+      summary: List keys
+      description: List keys for the tenant (no plaintext).
+      operationId: listKeys
+      responses:
+        '200':
+          description: A list of keys.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Key' }
+  /v1/keys/{key_id}:
+    delete:
+      tags: [Keys]
+      summary: Revoke a key
+      description: Revoke a key immediately.
+      operationId: revokeKey
+      parameters:
+        - $ref: '#/components/parameters/KeyId'
+      responses:
+        '204':
+          description: Key revoked.
+  /v1/keys/{key_id}/rotate:
+    post:
+      tags: [Keys]
+      summary: Rotate a key
+      description: >
+        Rotate a key — creates a replacement with the same scope and expiry,
+        and revokes the original.
+      operationId: rotateKey
+      parameters:
+        - $ref: '#/components/parameters/KeyId'
+      responses:
+        '200':
+          description: Replacement key (plaintext shown once).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/KeyCreated' }
+  /v1/keys/{key_id}/binding:
+    patch:
+      tags: [Keys]
+      summary: Bind a key to an agent or roles
+      description: >
+        Bind a key to a registered agent and/or restrict it to specific roles.
+        Both fields are optional and independent.
+      operationId: bindKey
+      parameters:
+        - $ref: '#/components/parameters/KeyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/KeyBinding' }
+            example:
+              bound_agent_id: fraud-analyst-prod-01
+              permitted_roles: [transaction_analyst, account_profiler]
+      responses:
+        '200':
+          description: Binding updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+  /v1/agents:
+    post:
+      tags: [Agents]
+      summary: Register a new agent
+      description: Register a new agent — status starts as `draft`.
+      operationId: registerAgent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Agent' }
+            example:
+              agent_role: transaction_analyst
+              display_name: Fraud Transaction Analyst v2
+              description: Analyzes transaction patterns for fraud signals
+              owner: fraud-eng-team
+              framework: langgraph
+      responses:
+        '201':
+          description: Agent registered.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Agent' }
+              example:
+                agent_id: agt_abc123
+                status: draft
+    get:
+      tags: [Agents]
+      summary: List agents
+      description: List all registered agents for this tenant.
+      operationId: listAgents
+      responses:
+        '200':
+          description: A list of agents.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Agent' }
+  /v1/agents/{agent_id}:
+    get:
+      tags: [Agents]
+      summary: Get an agent
+      description: Get a single agent by ID — includes live activity stats.
+      operationId: getAgent
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+      responses:
+        '200':
+          description: Agent detail.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Agent' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Agents]
+      summary: Update agent metadata
+      description: Update agent metadata — display name, description, framework, owner.
+      operationId: updateAgent
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Agent' }
+      responses:
+        '200':
+          description: Agent updated.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Agent' }
+  /v1/agents/{agent_id}/status:
+    patch:
+      tags: [Agents]
+      summary: Transition agent approval status
+      description: "Transition approval status: draft → pending_approval → approved → deprecated."
+      operationId: updateAgentStatus
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [draft, pending_approval, approved, deprecated]
+            example:
+              status: approved
+      responses:
+        '200':
+          description: Status updated.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Agent' }
+  /v1/agents/stats/summary:
+    get:
+      tags: [Agents]
+      summary: Registry-wide agent counts
+      description: Registry-wide counts — total, approved, pending, deny rates.
+      operationId: getAgentStatsSummary
+      responses:
+        '200':
+          description: Registry summary.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total: { type: integer }
+                  approved: { type: integer }
+                  pending: { type: integer }
+                  deny_rate: { type: number }
+  /v1/admin/tenants:
+    post:
+      tags: [Admin]
+      summary: Create a tenant
+      description: Create a tenant. Superadmin key only.
+      operationId: createTenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string }
+            example:
+              name: my_app
+      responses:
+        '201':
+          description: Tenant created (admin key shown once).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tenant_id: { type: string }
+                  admin_key: { type: string }
+              example:
+                tenant_id: ten_abc123
+                admin_key: apl_...
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/admin/tenants/{tenant_id}/settings:
+    patch:
+      tags: [Admin]
+      summary: Update tenant enforcement settings
+      description: Update per-tenant enforcement flags — superadmin only.
+      operationId: updateTenantSettings
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                require_agent_id:
+                  type: boolean
+                  description: >
+                    When true, every evaluate call for this tenant must supply an
+                    `agent_id`. Anonymous callers are denied with
+                    `policy_name="agent_id_required"`. Takes effect immediately.
+            example:
+              require_agent_id: true
+      responses:
+        '200':
+          description: Settings updated.
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/admin/tenants/{tenant_id}/keys:
+    post:
+      tags: [Admin]
+      summary: Provision a key for any tenant
+      description: >
+        Provision a key for any tenant — superadmin only. Accepts the same
+        `name`, `scope`, and `expires_days` fields as `POST /v1/keys`. Returns
+        404 if the tenant does not exist and 409 if the tenant is deactivated.
+      operationId: provisionTenantKey
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/KeyCreate' }
+      responses:
+        '201':
+          description: Key provisioned (plaintext shown once).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/KeyCreated' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Tenant is deactivated.
+  /health:
+    get:
+      tags: [Health]
+      summary: Liveness probe
+      description: Health check. No authentication required.
+      operationId: health
+      security: []
+      responses:
+        '200':
+          description: Service is healthy.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+components:
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: >
+        API key with `admin`, `read`, or `evaluate` scope. Missing key → 401;
+        invalid or revoked key → 403.
+  parameters:
+    SessionId:
+      name: session_id
+      in: path
+      required: true
+      schema: { type: string }
+    EventId:
+      name: event_id
+      in: path
+      required: true
+      schema: { type: string }
+    PolicyId:
+      name: policy_id
+      in: path
+      required: true
+      schema: { type: string }
+    RuleId:
+      name: rule_id
+      in: path
+      required: true
+      schema: { type: string }
+    KeyId:
+      name: key_id
+      in: path
+      required: true
+      schema: { type: string }
+    AgentId:
+      name: agent_id
+      in: path
+      required: true
+      schema: { type: string }
+    TenantId:
+      name: tenant_id
+      in: path
+      required: true
+      schema: { type: string }
+  responses:
+    Unauthorized:
+      description: Missing API key.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: Invalid, revoked, or insufficiently scoped API key.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    EvaluateRequest:
+      type: object
+      required: [agent_role, user_id, source_id, sensitivity_level, session_id]
+      properties:
+        agent_role:
+          type: string
+          description: Must match a policy's `agent_role` exactly.
+        user_id:
+          type: string
+          description: The user on whose behalf the agent is acting.
+        source_id:
+          type: string
+          description: The data source being accessed.
+        sensitivity_level:
+          type: string
+          enum: [low, medium, high, critical]
+          description: Sensitivity of the data being retrieved.
+        session_id:
+          type: string
+          description: Groups related retrievals. Enforces cross-agent isolation.
+        task_type:
+          type: string
+          description: Optional. Checked against `allowed_tasks` / `denied_tasks`.
+        agent_id:
+          type: string
+          description: Optional. Enables identity binding checks and stamps the audit event.
+        query:
+          type: string
+          description: Optional query text; masked in the audit log when PII masking is enabled.
+    EvaluateResponse:
+      type: object
+      properties:
+        decision:
+          type: string
+          enum: [ALLOW, DENY]
+        policy_name: { type: string }
+        reason: { type: string }
+        event_id: { type: string }
+    AuditEvent:
+      type: object
+      properties:
+        event_id: { type: string }
+        agent_role: { type: string }
+        agent_id: { type: string, nullable: true }
+        user_id: { type: string }
+        source_id: { type: string }
+        decision: { type: string, enum: [ALLOW, DENY] }
+        policy_name: { type: string }
+        reason: { type: string }
+        context_hash: { type: string, nullable: true }
+        source_type: { type: string }
+        pii_masked: { type: boolean }
+        timestamp: { type: string, format: date-time }
+    AuditStats:
+      type: object
+      properties:
+        total: { type: integer }
+        allowed: { type: integer }
+        denied: { type: integer }
+        by_source_type:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              total: { type: integer }
+              allowed: { type: integer }
+              denied: { type: integer }
+    AuditRetention:
+      type: object
+      properties:
+        retention_days: { type: integer }
+        policy: { type: string }
+        anchor:
+          type: object
+          nullable: true
+          properties:
+            anchor_hash: { type: string }
+            purged_before: { type: string, format: date-time }
+            purged_count: { type: integer }
+    LineageRecord:
+      type: object
+      required: [event_id, action_type]
+      properties:
+        event_id: { type: string }
+        action_type: { type: string }
+        detail: { type: object, additionalProperties: true }
+        outcome: { type: string }
+    RetentionSettings:
+      type: object
+      properties:
+        retention_days: { type: integer }
+        session_retention_days: { type: integer }
+        audit_policy: { type: string }
+        session_policy: { type: string }
+    RetentionUpdate:
+      type: object
+      properties:
+        retention_days:
+          type: integer
+          description: Omit to leave unchanged. Set to 0 to disable audit purge.
+        session_retention_days:
+          type: integer
+          description: Omit to leave unchanged. Set to 0 to disable session purge.
+    Policy:
+      type: object
+      required: [name, agent_role, allowed_sources, denied_sources, max_sensitivity]
+      properties:
+        name: { type: string }
+        agent_role: { type: string }
+        allowed_sources: { type: array, items: { type: string } }
+        denied_sources: { type: array, items: { type: string } }
+        max_sensitivity: { type: string, enum: [low, medium, high, critical] }
+        allowed_tasks: { type: array, items: { type: string } }
+        denied_tasks: { type: array, items: { type: string } }
+        session_ttl_minutes: { type: integer }
+        permitted_agent_ids: { type: array, items: { type: string } }
+        industry: { type: string }
+        process_group: { type: string }
+    AlertRule:
+      type: object
+      required: [name, rule_type, threshold]
+      properties:
+        name: { type: string }
+        rule_type:
+          type: string
+          enum: [denial_spike, new_source_access, isolation_violation, high_deny_rate]
+        threshold: { type: integer }
+        window_minutes: { type: integer }
+        cooldown_minutes: { type: integer }
+        webhook_url: { type: string }
+        email: { type: string }
+        enabled: { type: boolean }
+    FiredAlert:
+      type: object
+      properties:
+        rule_id: { type: string }
+        rule_name: { type: string }
+        fired_at: { type: string, format: date-time }
+        delivery_status: { type: string }
+        trigger_detail: { type: object, additionalProperties: true }
+    Session:
+      type: object
+      properties:
+        session_id: { type: string }
+        agent_role: { type: string }
+        status: { type: string, enum: [active, expired, revoked] }
+        created_at: { type: string, format: date-time }
+        expires_at: { type: string, format: date-time, nullable: true }
+    KeyCreate:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string }
+        scope: { type: string, enum: [admin, read, evaluate] }
+        expires_days: { type: integer }
+    KeyCreated:
+      type: object
+      properties:
+        key_id: { type: string }
+        name: { type: string }
+        key: { type: string, description: Plaintext key — shown only once. }
+        scope: { type: string, enum: [admin, read, evaluate] }
+        expires_at: { type: string, format: date-time, nullable: true }
+        created_at: { type: string, format: date-time }
+    Key:
+      type: object
+      properties:
+        key_id: { type: string }
+        name: { type: string }
+        scope: { type: string, enum: [admin, read, evaluate] }
+        bound_agent_id: { type: string, nullable: true }
+        permitted_roles: { type: array, items: { type: string } }
+        expires_at: { type: string, format: date-time, nullable: true }
+        created_at: { type: string, format: date-time }
+    KeyBinding:
+      type: object
+      properties:
+        bound_agent_id:
+          type: string
+          description: >
+            The key will only accept evaluate calls that present this exact
+            `agent_id`. Mismatched or missing → denied with
+            `policy_name="key_agent_binding"`.
+        permitted_roles:
+          type: array
+          items: { type: string }
+          description: The key will only accept evaluate calls that claim a role in this list.
+    Agent:
+      type: object
+      required: [agent_role]
+      properties:
+        agent_id: { type: string }
+        agent_role:
+          type: string
+          description: The role this agent will claim in evaluate calls. Must match a policy.
+        display_name:
+          type: string
+          description: Human-readable name shown in the dashboard.
+        description:
+          type: string
+          description: Purpose and data access rationale. Used during approval review.
+        owner:
+          type: string
+          description: Team or individual responsible for this agent.
+        framework:
+          type: string
+          description: "Runtime framework: langgraph, openai_agents, bedrock, etc."
+        permitted_roles:
+          type: array
+          items: { type: string }
+          description: Roles this agent is allowed to claim. Defaults to [agent_role].
+        credential_type:
+          type: string
+          enum: [api_key, jwt_oidc, mtls, conjur]
+          description: Authentication method. Defaults to api_key.
+        bound_key_id:
+          type: string
+          description: If set, only the key with this ID may present this agent's identity.
+        status:
+          type: string
+          enum: [draft, pending_approval, approved, deprecated]
+    Error:
+      type: object
+      required: [detail]
+      properties:
+        detail: { type: string }

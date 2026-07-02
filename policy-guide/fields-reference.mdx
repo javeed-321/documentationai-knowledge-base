@@ -1,0 +1,21 @@
+---
+title: Fields Reference
+description: Every field available in a policy role definition, with types and requirements.
+---
+
+## Fields reference
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `name` | string | yes | Unique identifier. Appears in the audit log as `policy_name`. |
+| `agent_role` | string | yes | Must match the `agent_role` passed to `guard.protect()` exactly. |
+| `allowed_sources` | list | yes | Data sources this role may access. Empty list `[]` = allow all non-denied sources. |
+| `denied_sources` | list | yes | Always blocked, regardless of the allowed list. Evaluated first. |
+| `max_sensitivity` | string | yes | Sensitivity ceiling: `low`, `medium`, `high`, or `critical`. |
+| `allowed_tasks` | list | no | Task types this role may perform. Empty `[]` = allow all non-denied tasks. |
+| `denied_tasks` | list | no | Task types always blocked for this role. |
+| `session_ttl_minutes` | integer | no | Session expiry in minutes for this role. Overrides the global `AUTOPIL_SESSION_TTL_MINUTES` env var. Omit for no per-role TTL. |
+| `sensitivity_decay` | list | no | Age-based sensitivity ceiling schedule. Each entry has `after_minutes` and `max_sensitivity`. Evaluated in ascending order — highest exceeded threshold applies. Cannot loosen the static ceiling. |
+| `permitted_agent_ids` | list | no | If set, only agents whose `agent_id` matches one of these patterns may evaluate against this policy. Supports exact match and `fnmatch` wildcards (e.g. `reporting-agent-*`). Requests that omit `agent_id` are denied when this list is non-empty. |
+| `industry` | string | no | Auto-injected from directory path (e.g. `financial_services`). |
+| `process_group` | string | no | Auto-injected from filename stem (e.g. `consumer_banking`). |

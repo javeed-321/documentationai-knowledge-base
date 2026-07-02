@@ -1,0 +1,26 @@
+---
+title: Multi-Tenancy
+description: Row-level tenant isolation across audit events, policies, alert rules, keys, and sessions.
+---
+
+## Multi-tenancy
+
+AutoPIL uses row-level tenant isolation. Every table carries a `tenant_id` column. All queries are filtered to the calling tenant's ID — audit events, policies, alert rules, API keys, and sessions are fully separated across tenants.
+
+Superadmin keys (created at first start) can access `/v1/admin/*` routes to provision tenants and keys. Regular tenant keys are blocked with HTTP 403.
+
+```bash title="Provision a tenant and key"
+# Create a tenant
+curl -X POST http://localhost:8000/v1/admin/tenants \
+  -H "X-API-Key: apl_superadmin_key" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "my_app"}'
+# → { "tenant_id": "ten_abc123", "admin_key": "apl_..." }
+
+# Create an agent-specific key
+curl -X POST http://localhost:8000/v1/keys \
+  -H "X-API-Key: apl_tenant_admin_key" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "production_agent"}'
+# → { "key": "apl_...", "key_id": "key_..." }  (shown once)
+```
