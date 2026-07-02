@@ -169,13 +169,13 @@ paths:
       responses:
         '200':
           description: Chain verification result.
+          # Source docs list this endpoint with a description only and document no
+          # response body; the response shape is intentionally left unspecified.
           content:
             application/json:
               schema:
                 type: object
-                properties:
-                  valid: { type: boolean }
-                  events_checked: { type: integer }
+                additionalProperties: true
   /v1/audit/retention:
     get:
       tags: [Audit]
@@ -1040,12 +1040,9 @@ components:
         enabled: { type: boolean }
     FiredAlert:
       type: object
-      properties:
-        rule_id: { type: string }
-        rule_name: { type: string }
-        fired_at: { type: string, format: date-time }
-        delivery_status: { type: string }
-        trigger_detail: { type: object, additionalProperties: true }
+      # Source docs describe this only as "fired alert deliveries with trigger
+      # details" and document no individual fields; shape left unspecified.
+      additionalProperties: true
     Session:
       type: object
       properties:
