@@ -1,0 +1,52 @@
+---
+title: "Installation"
+description: "Protect your first retrieval function:"
+---
+
+## Installation
+
+```bash title="terminal"
+# Base install (SQLite backend)
+pip install autopil
+
+# With Postgres support
+pip install autopil[postgres]
+
+# With OpenTelemetry (gRPC exporter)
+pip install autopil[otel]
+
+# With OpenTelemetry (HTTP exporter — Grafana Cloud)
+pip install autopil[otel-http]
+
+# All dev dependencies (tests, linting)
+pip install autopil[dev]
+```
+
+Protect your first retrieval function:
+
+```python title="retrieval.py"
+from autopil import ContextGuard, SensitivityLevel
+
+# Point at a policy file or directory
+guard = ContextGuard(
+    policy_path="policies/",
+    audit_db="autopil.db",
+)
+
+@guard.protect(
+    agent_role="loan_underwriter",
+    user_id="user_001",
+    source_id="credit_scores",
+    sensitivity_level=SensitivityLevel.HIGH,
+    session_id=session_id,
+)
+def get_credit_score(customer_id: str) -> dict:
+    return credit_db.query(customer_id)
+
+# ALLOW — policy matched, audit event logged, OTEL span emitted
+score = get_credit_score("cust_abc")
+
+# DENY — raises PermissionError, denial logged, alert rules checked
+# source='executive_comms' is on the denylist for this role
+```
+

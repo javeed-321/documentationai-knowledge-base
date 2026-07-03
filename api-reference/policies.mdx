@@ -1,0 +1,28 @@
+---
+title: "Policies"
+description: "Endpoints: GET /v1/policies — List active policies (filter: industry, process_group, agent_role); POST /v1/policies — Create a policy; PUT /v1/policies/{policy_id} —…"
+---
+
+## Policies
+
+**`GET /v1/policies`**  
+List active policies (filter: industry, process_group, agent_role)
+
+**`POST /v1/policies`**  
+Create a policy
+
+**`PUT /v1/policies/{policy_id}`**  
+Update a policy (saves version history, sets user_modified)
+
+**`DELETE /v1/policies/{policy_id}`**  
+Soft-delete a policy
+
+**`GET /v1/policies/{policy_id}/history`**  
+Full version history for a policy
+
+**`POST /v1/policies/{policy_id}/restore`**  
+Restore a policy to its original YAML definition (clears user_modified)
+
+**`POST /v1/policies/reload`**  
+Reload all policies from disk without restart
+

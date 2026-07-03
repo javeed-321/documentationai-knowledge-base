@@ -1,6 +1,6 @@
 ---
-title: ASGI Middleware
-description: Enforce access policy at the HTTP layer for FastAPI and Starlette apps — before your handler runs.
+title: "ASGI Middleware"
+description: "AutoPILMiddleware enforces access policy at the HTTP layer for FastAPI and Starlette apps — before your route handler runs."
 ---
 
 ## ASGI Middleware
@@ -39,7 +39,7 @@ app.add_middleware(
 )
 ```
 
-## RouteRule parameters
+RouteRule parameters:
 
 | Parameter | Type | Description |
 |---|---|---|
@@ -51,5 +51,6 @@ app.add_middleware(
 | `on_deny` | str | `"reject"` (default) returns HTTP 403. `"log"` logs the denial but allows the request through (shadow mode). |
 
 <Callout kind="info">
-  Source type: All events from the middleware are stamped `source_type="api"`, regardless of which guard subclass is in use. This lets the dashboard distinguish HTTP-layer enforcement from SDK-level enforcement.
+  source_type: All events from the middleware are stamped `source_type="api"`, regardless of which guard subclass is in use. This lets the dashboard distinguish HTTP-layer enforcement from SDK-level enforcement.
 </Callout>
+

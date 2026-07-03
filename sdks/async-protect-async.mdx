@@ -1,11 +1,39 @@
 ---
-title: TypeScript SDK
-description: A thin, dependency-free REST wrapper published as @autopil/sdk using native fetch.
+title: "Async decorator — protect_async"
+description: "For async agent frameworks (FastAPI, asyncio, aioboto3), use protect_async instead of protect."
 ---
 
-## TypeScript SDK
+## Async decorator — protect_async
 
-A thin REST API wrapper published as `@autopil/sdk`. Zero runtime dependencies — uses native `fetch` (Node 18+).
+For async agent frameworks (FastAPI, asyncio, aioboto3), use `protect_async` instead of `protect`. It uses `contextvars.ContextVar` instead of `threading.local()`, making `last_event_id` safe under concurrent async tasks.
+
+```python title="async_retrieval.py"
+from autopil import ContextGuard, SensitivityLevel
+
+guard = ContextGuard(policy_path="policies/")
+
+@guard.protect_async(
+    agent_role="analyst",
+    user_id="user_002",
+    source_id="reports",
+    sensitivity_level=SensitivityLevel.MEDIUM,
+    session_id=session_id,
+)
+async def fetch_report(query: str) -> list:
+    return await vector_db.asearch(query)
+
+# Safe to run concurrently — each task gets its own ContextVar slot
+results = await asyncio.gather(
+    fetch_report("Q1 revenue"),
+    fetch_report("Q2 margins"),
+)
+```
+
+<Callout kind="info">
+  Source type: `protect_async` uses the same `_source_type="sdk"` as the sync decorator. All audit events are stamped consistently regardless of sync vs async path.
+</Callout>
+
+TypeScript SDK: A thin REST API wrapper published as `@autopil/sdk`. Zero runtime dependencies — uses native `fetch` (Node 18+).
 
 ```bash title="terminal"
 npm install @autopil/sdk
@@ -13,7 +41,7 @@ npm install @autopil/sdk
 
 Set your Render URL and API key as environment variables, then pass them to the client. Get your key from the dashboard under Settings → API Keys (`evaluate` scope for agent code).
 
-```typescript title="client usage"
+```python title="client usage"
 import { AutoPilClient } from "@autopil/sdk"
 
 const client = new AutoPilClient({
@@ -42,7 +70,7 @@ const events = await client.audit.listEvents({
 })
 ```
 
-## Client resources
+Client resources:
 
 | Resource | Methods |
 |---|---|
@@ -59,3 +87,4 @@ const events = await client.audit.listEvents({
 <Callout kind="info">
   `AutoPilError` is thrown for non-2xx responses and carries `statusCode` and `detail` from the server.
 </Callout>
+

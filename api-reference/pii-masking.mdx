@@ -1,6 +1,6 @@
 ---
-title: PII Masking
-description: Mask query, user_id, and embedded query content in audit events before they are written.
+title: "PII masking"
+description: "When AUTOPIL_LOG_PII_MASK=true, three fields are masked before each new audit event is written. Existing events are not modified."
 ---
 
 ## PII masking
@@ -13,7 +13,7 @@ When `AUTOPIL_LOG_PII_MASK=true`, three fields are masked before each new audit 
 | `user_id` | `uid:<16-char hex>` | Tenant-salted hash — consistent within a tenant, so per-user filtering still works |
 | `reason` | Preserved, `query=<value>` substrings replaced with `query=sha256:<hash>` | Policy decision context is kept intact; embedded query content is removed |
 
-Events written with masking enabled carry `"pii_masked": true`. The dashboard Event Detail drawer shows a **PII masked** badge on these events. The `context_hash` is unaffected — chain integrity verification continues to work normally.
+Events written with masking enabled carry `"pii_masked": true`. The dashboard Event Detail drawer shows a PII masked badge on these events. The `context_hash` is unaffected — chain integrity verification continues to work normally.
 
 ```json title="Example — masked audit event"
 {
@@ -24,6 +24,3 @@ Events written with masking enabled carry `"pii_masked": true`. The dashboard Ev
 }
 ```
 
-<Callout kind="info">
-  Salt is derived from `AUTOPIL_SECRET_KEY + tenant_id` — the same user always hashes to the same value within a tenant, so per-user filtering still works. See [Deployment → PII Masking &amp; Identity](/deployment/pii-masking) for how to enable it in production.
-</Callout>

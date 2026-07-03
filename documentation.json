@@ -1,38 +1,56 @@
 {
   "name": "AutoPIL",
+  "initialRoute": "getting-started/quickstart",
   "colors": {
     "light": {
-      "brand": "#4F46E5"
+      "brand": "#4F46E5",
+      "heading": "#1a1a1a",
+      "text": "#374151"
     },
     "dark": {
-      "brand": "#818CF8"
+      "brand": "#818CF8",
+      "heading": "#f2f2f2",
+      "text": "#c1c1c1"
     }
   },
   "navigation": {
     "tabs": [
       {
-        "tab": "Documentation",
-        "icon": "book",
+        "tab": "Getting Started",
+        "icon": "rocket",
         "groups": [
           {
             "group": "Getting Started",
             "icon": "rocket",
+            "expandable": false,
             "pages": [
               {
-                "title": "Quick Start",
+                "title": "Quick start",
                 "path": "getting-started/quickstart",
                 "icon": "zap"
               },
               {
-                "title": "First-Start Bootstrap",
+                "title": "Installation",
+                "path": "getting-started/installation",
+                "icon": "download"
+              },
+              {
+                "title": "First-start bootstrap",
                 "path": "getting-started/first-start",
                 "icon": "power"
               }
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Core Concepts",
+        "icon": "layers",
+        "groups": [
           {
             "group": "Core Concepts",
             "icon": "layers",
+            "expandable": false,
             "pages": [
               {
                 "title": "Architecture",
@@ -40,48 +58,65 @@
                 "icon": "network"
               },
               {
-                "title": "Multi-Tenancy",
+                "title": "Enforcement flow",
+                "path": "core-concepts/enforcement-flow",
+                "icon": "git-branch"
+              },
+              {
+                "title": "Multi-tenancy",
                 "path": "core-concepts/multi-tenancy",
                 "icon": "building"
               },
               {
-                "title": "Agent Identity",
+                "title": "Agent identity",
                 "path": "core-concepts/agent-identity",
                 "icon": "fingerprint"
               }
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Policy Guide",
+        "icon": "shield",
+        "groups": [
           {
             "group": "Policy Guide",
             "icon": "shield",
+            "expandable": false,
             "pages": [
               {
-                "title": "Policy File Format",
+                "title": "Policy file format",
                 "path": "policy-guide/policy-format",
                 "icon": "file-code"
               },
               {
-                "title": "Fields Reference",
+                "title": "Fields reference",
                 "path": "policy-guide/fields-reference",
                 "icon": "list"
               },
               {
-                "title": "Evaluation Order",
+                "title": "Evaluation order",
                 "path": "policy-guide/evaluation-order",
                 "icon": "list-ordered"
               },
               {
-                "title": "Sensitivity & Task Scoping",
+                "title": "Sensitivity levels",
                 "path": "policy-guide/sensitivity-levels",
                 "icon": "gauge"
               },
               {
-                "title": "Hot Reload",
+                "title": "Task scoping",
+                "path": "policy-guide/task-scoping",
+                "icon": "target"
+              },
+              {
+                "title": "Hot reload",
                 "path": "policy-guide/hot-reload",
                 "icon": "refresh-cw"
               },
               {
-                "title": "Agent ID Binding",
+                "title": "Agent ID binding in policies",
                 "path": "policy-guide/agent-id-binding",
                 "icon": "lock"
               }
@@ -94,8 +129,9 @@
         "icon": "code",
         "groups": [
           {
-            "group": "Overview",
-            "icon": "file-text",
+            "group": "API Reference",
+            "icon": "code",
+            "expandable": false,
             "pages": [
               {
                 "title": "Authentication",
@@ -103,21 +139,71 @@
                 "icon": "lock"
               },
               {
-                "title": "Log Retention",
+                "title": "Context evaluate",
+                "path": "api-reference/context-evaluate",
+                "icon": "scale"
+              },
+              {
+                "title": "Audit log",
+                "path": "api-reference/audit-log",
+                "icon": "scroll-text"
+              },
+              {
+                "title": "Log retention",
                 "path": "api-reference/log-retention",
                 "icon": "clock"
               },
               {
-                "title": "PII Masking",
+                "title": "Session retention",
+                "path": "api-reference/session-retention",
+                "icon": "timer"
+              },
+              {
+                "title": "PII masking",
                 "path": "api-reference/pii-masking",
                 "icon": "eye-off"
+              },
+              {
+                "title": "Policies",
+                "path": "api-reference/policies",
+                "icon": "shield"
+              },
+              {
+                "title": "Alerts",
+                "path": "api-reference/alerts",
+                "icon": "bell"
+              },
+              {
+                "title": "Sessions",
+                "path": "api-reference/sessions",
+                "icon": "activity"
+              },
+              {
+                "title": "API keys",
+                "path": "api-reference/api-keys",
+                "icon": "key"
+              },
+              {
+                "title": "Key binding",
+                "path": "api-reference/key-binding",
+                "icon": "link"
+              },
+              {
+                "title": "Agent registry",
+                "path": "api-reference/agent-registry",
+                "icon": "bot"
+              },
+              {
+                "title": "Tenant enforcement settings",
+                "path": "api-reference/tenant-enforcement-settings",
+                "icon": "settings"
+              },
+              {
+                "title": "Superadmin key provisioning",
+                "path": "api-reference/superadmin-key-provisioning",
+                "icon": "key-round"
               }
             ]
-          },
-          {
-            "group": "Endpoints",
-            "icon": "terminal",
-            "openapi": "api-reference/openapi.yaml"
           }
         ]
       },
@@ -128,9 +214,10 @@
           {
             "group": "SDKs & Integrations",
             "icon": "plug",
+            "expandable": false,
             "pages": [
               {
-                "title": "Choosing an Integration Pattern",
+                "title": "Choosing an integration pattern",
                 "path": "sdks/integration-patterns",
                 "icon": "git-branch"
               },
@@ -140,19 +227,14 @@
                 "icon": "code"
               },
               {
-                "title": "TypeScript SDK",
-                "path": "sdks/typescript-sdk",
-                "icon": "code"
+                "title": "Connecting to a hosted instance (Render / production)",
+                "path": "sdks/connecting-to-hosted-instance",
+                "icon": "cloud"
               },
               {
-                "title": "Go SDK",
-                "path": "sdks/go-sdk",
-                "icon": "code"
-              },
-              {
-                "title": "Java SDK",
-                "path": "sdks/java-sdk",
-                "icon": "code"
+                "title": "Async decorator \u2014 protect_async",
+                "path": "sdks/async-protect-async",
+                "icon": "zap"
               },
               {
                 "title": "MCP Server",
@@ -165,9 +247,19 @@
                 "icon": "layers"
               },
               {
-                "title": "Framework Integrations",
+                "title": "Framework integrations",
                 "path": "sdks/frameworks",
                 "icon": "boxes"
+              },
+              {
+                "title": "Go SDK",
+                "path": "sdks/go-sdk",
+                "icon": "code"
+              },
+              {
+                "title": "Java SDK",
+                "path": "sdks/java-sdk",
+                "icon": "code"
               }
             ]
           }
@@ -180,9 +272,10 @@
           {
             "group": "Deployment",
             "icon": "server",
+            "expandable": false,
             "pages": [
               {
-                "title": "Local Development",
+                "title": "Local development",
                 "path": "deployment/local",
                 "icon": "laptop"
               },
@@ -207,9 +300,14 @@
                 "icon": "bell"
               },
               {
-                "title": "PII Masking & Identity",
+                "title": "Retention",
+                "path": "deployment/retention",
+                "icon": "clock"
+              },
+              {
+                "title": "PII masking",
                 "path": "deployment/pii-masking",
-                "icon": "shield-check"
+                "icon": "eye-off"
               }
             ]
           }

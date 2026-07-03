@@ -1,6 +1,6 @@
 ---
-title: Go SDK
-description: A stdlib-only REST client published at github.com/vibrantcapital/autopil-go.
+title: "Go SDK"
+description: "A stdlib-only REST client published at github.com/vibrantcapital/autopil-go. No external dependencies — uses only net/http and encoding/json. Requires Go 1.21+."
 ---
 
 ## Go SDK
@@ -42,7 +42,7 @@ events, err := client.Audit.ListEvents(ctx, autopil.ListEventsParams{
 })
 ```
 
-## Client resources
+Client resources:
 
 | Resource | Methods |
 |---|---|
@@ -55,3 +55,4 @@ events, err := client.Audit.ListEvents(ctx, autopil.ListEventsParams{
 <Callout kind="info">
   `AutoPILError` implements `error` and carries `StatusCode int` and `Detail string` from the server response. Options: `autopil.WithTimeout(d)`, `autopil.WithHTTPClient(c)`.
 </Callout>
+

@@ -1,16 +1,17 @@
 ---
-title: Log Retention
-description: How audit events and session records are purged, and how to inspect the chain anchor.
+title: "Log retention"
+description: "Retention is configured per tenant from Settings → Retention in the dashboard. Defaults are 365 days for audit events and 90 days for session records."
 ---
 
 ## Log retention
 
-Retention is configured per tenant from Settings → Retention in the dashboard. Defaults are **365 days** for audit events and **90 days** for session records. The purge workers run once at server startup then every 24 hours.
+Retention is configured per tenant from Settings → Retention in the dashboard. Defaults are 365 days for audit events and 90 days for session records. The purge workers run once at server startup then every 24 hours.
 
-The retention endpoints — `GET /v1/settings/retention`, `PUT /v1/settings/retention`, and `GET /v1/audit/retention` — are documented in the [Endpoints](/api-reference/openapi) reference. Their behavior:
+**`GET /v1/settings/retention`**  
+Return this tenant's current audit and session retention settings
 
-- Either field on `PUT /v1/settings/retention` is optional — omit one to leave it unchanged. Set a value to `0` to disable automatic purge for that data type.
-- Reducing retention permanently deletes records older than the new window on the next nightly cycle.
+**`PUT /v1/settings/retention`**  
+Update retention settings (admin-scoped key required)
 
 ```json title="GET /v1/settings/retention — response"
 {
@@ -21,7 +22,14 @@ The retention endpoints — `GET /v1/settings/retention`, `PUT /v1/settings/rete
 }
 ```
 
-## Chain anchor
+```json title="PUT /v1/settings/retention — request"
+{
+  "retention_days":         180,
+  "session_retention_days": 60
+}
+```
+
+Either field is optional — omit one to leave it unchanged. Set to `0` to disable automatic purge for that data type. Reducing retention permanently deletes records older than the new window on the next nightly cycle.
 
 Call `GET /v1/audit/retention` to inspect the last purge anchor for chain integrity:
 
@@ -39,14 +47,3 @@ Call `GET /v1/audit/retention` to inspect the last purge anchor for chain integr
 
 `anchor` is `null` if no purge has run yet. Once set, auditors can confirm the chain is intact from the anchor forward by calling `GET /v1/audit/verify`.
 
-## Session retention
-
-Session records are purged separately from audit events. Only **expired or revoked** sessions older than `session_retention_days` are deleted — active sessions are never purged. The default is 90 days. Configure it from Settings → Retention alongside audit retention.
-
-## Configuring retention in production
-
-Retention is configured per tenant from the dashboard under Settings → Retention — no environment variable changes required. Both purge workers start automatically and run every 24 hours. To change retention, open the Settings tab, update either value, and click Save. A confirmation prompt appears when reducing either window — the deletion is permanent and runs on the next nightly cycle.
-
-<Callout kind="info">
-  The `AUDIT_RETENTION_DAYS` environment variable sets a system-wide fallback but is superseded by per-tenant settings once configured.
-</Callout>

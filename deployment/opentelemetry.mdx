@@ -1,6 +1,6 @@
 ---
-title: OpenTelemetry
-description: Emit spans and metrics to Datadog, Grafana Cloud, or the local console.
+title: "OpenTelemetry"
+description: "Activated by setting OTEL_EXPORTER_OTLP_ENDPOINT. When unset, the telemetry module is a complete no-op — no spans, no metrics, no overhead."
 ---
 
 ## OpenTelemetry
@@ -20,3 +20,4 @@ export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Basic <base64>"
 # Local console (no collector needed)
 export OTEL_TRACES_EXPORTER=console
 ```
+

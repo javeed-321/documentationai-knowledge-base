@@ -1,6 +1,6 @@
 ---
-title: First-Start Bootstrap
-description: Start the API server, capture the one-time superadmin key, and provision a scoped evaluate key.
+title: "First-start bootstrap"
+description: "Run the API server pointing at your policy directory:"
 ---
 
 ## First-start bootstrap
@@ -13,13 +13,13 @@ autopil-serve --policy policies/
 
 On first start, if no tenants exist, the server creates a `default` tenant and prints a superadmin key once:
 
-```text title="stdout"
+```bash title="stdout"
 ⚠  First start — created 'default' tenant and superadmin key:
    apl_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    Save this — it will not be shown again.
 ```
 
-<Callout kind="warning">
+<Callout kind="alert">
   Save this key. It is shown exactly once. Use it as `X-API-Key` for all subsequent API calls, including creating tenants and provisioning additional keys.
 </Callout>
 
@@ -30,3 +30,4 @@ docker compose logs | grep "AUTOPIL ADMIN KEY"
 ```
 
 Once running, create a scoped `evaluate` key from the dashboard under Settings → API Keys for use in agent code. Keep the superadmin key out of agent processes.
+

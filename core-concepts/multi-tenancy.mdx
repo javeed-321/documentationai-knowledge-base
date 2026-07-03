@@ -1,6 +1,6 @@
 ---
-title: Multi-Tenancy
-description: Row-level tenant isolation across audit events, policies, alert rules, keys, and sessions.
+title: "Multi-tenancy"
+description: "AutoPIL uses row-level tenant isolation. Every table carries a tenant_id column."
 ---
 
 ## Multi-tenancy
@@ -24,3 +24,4 @@ curl -X POST http://localhost:8000/v1/keys \
   -d '{"name": "production_agent"}'
 # → { "key": "apl_...", "key_id": "key_..." }  (shown once)
 ```
+

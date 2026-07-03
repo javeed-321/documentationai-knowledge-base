@@ -1,6 +1,6 @@
 ---
-title: Postgres
-description: Run AutoPIL against Postgres for the Full Stack or Core edition.
+title: "Postgres"
+description: "Schema is created automatically on first start. Subsequent starts run ALTER TABLE … ADD COLUMN IF NOT EXISTS migration guards — safe to run against existing databases."
 ---
 
 ## Postgres
@@ -20,3 +20,4 @@ autopil-serve --policy policies/
 ```
 
 Schema is created automatically on first start. Subsequent starts run `ALTER TABLE … ADD COLUMN IF NOT EXISTS` migration guards — safe to run against existing databases. The `docker-compose.yml` starts `postgres:16-alpine` and wires `DATABASE_URL` automatically.
+

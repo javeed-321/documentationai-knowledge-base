@@ -1,0 +1,121 @@
+---
+title: "Connecting to a hosted instance (Render / production)"
+description: "If your AutoPIL instance is deployed on Render or any other host, call the REST API directly — do not use the embedded ContextGuard. Follow these steps in order."
+---
+
+## Connecting to a hosted instance (Render / production)
+
+If your AutoPIL instance is deployed on Render or any other host, call the REST API directly — do not use the embedded `ContextGuard`. Follow these steps in order.
+
+<Steps>
+  <Step title="Verify your instance is running">
+    `curl https://your-app.onrender.com/health` should return `{"status": "ok"}`. If it fails, check your Render service logs before continuing.
+  </Step>
+  <Step title="Create a policy in the dashboard">
+    Go to Policies → New Policy. Set the agent role (e.g. `analyst`), max sensitivity, and allowed sources. Without a matching policy every call is denied.
+  </Step>
+  <Step title="Create an API key">
+    Go to Settings → API Keys → Create Key. Choose `evaluate` scope. Copy the key immediately — it is shown only once.
+  </Step>
+  <Step title="Set environment variables">
+    never hardcode keys in source code.
+  </Step>
+  <Step title="Install the HTTP client">
+    `pip install httpx`
+  </Step>
+  <Step title="Wrap your retrieval function">
+    Wrap your retrieval function
+  </Step>
+  <Step title="Verify it is working">
+    Open the dashboard → Audit Events. Your event should appear with the agent role, source, and decision. If nothing shows up: confirm the `agent_role` and `source_id` match your policy exactly, and that the API key belongs to the correct tenant.
+  </Step>
+</Steps>
+
+```bash title=".env"
+AUTOPIL_BASE_URL=https://your-app.onrender.com
+AUTOPIL_API_KEY=apl_xxxxxxxxxxxxxxxxxxxx
+```
+
+```python title="agent.py"
+import os, uuid, httpx
+
+AUTOPIL_BASE_URL = os.environ["AUTOPIL_BASE_URL"]
+AUTOPIL_API_KEY  = os.environ["AUTOPIL_API_KEY"]
+
+def evaluate_context(agent_role, user_id, source_id, query,
+                      sensitivity_level="high", session_id=None):
+    try:
+        r = httpx.post(
+            f"{AUTOPIL_BASE_URL}/v1/context/evaluate",
+            headers={"X-API-Key": AUTOPIL_API_KEY},
+            json={"query": query, "agent_role": agent_role,
+                  "user_id": user_id, "source_id": source_id,
+                  "sensitivity_level": sensitivity_level,
+                  "session_id": session_id},
+            timeout=10,
+        )
+        r.raise_for_status()
+    except (httpx.TimeoutException, httpx.ConnectError):
+        raise PermissionError("[AutoPIL] Governance check unreachable — access blocked")
+    result = r.json()
+    if result["decision"] == "DENY":
+        raise PermissionError(result["reason"])
+    return result  # result["event_id"] available for lineage
+
+# Generate session_id once per conversation/workflow — not per call
+SESSION_ID = str(uuid.uuid4())
+
+result = evaluate_context(
+    agent_role="analyst", user_id="user_123",
+    source_id="financial_reports", query="Q3 revenue",
+    sensitivity_level="high", session_id=SESSION_ID,
+)
+# ALLOW — proceed with retrieval
+context = your_vectorstore.search(query)
+```
+
+<Callout kind="alert">
+  Fail closed on network errors. If AutoPIL is unreachable, block access rather than silently bypassing governance. The example above does this — never swap the except block for a silent pass.
+</Callout>
+
+ContextGuard (embedded mode): Use this for local development or self-hosted single-process deployments where AutoPIL runs in the same process as your agent. For production agents on Render, use the REST pattern above.
+
+```python title="ContextGuard constructor"
+from autopil import ContextGuard
+
+guard = ContextGuard(
+    policy_path="policies/",      # file or directory
+    audit_db="autopil.db",       # SQLite path
+    database_url="postgresql://...", # use Postgres instead
+    tenant_id="ten_abc",          # optional — uses default tenant
+)
+```
+
+@guard.protect() decorator parameters:
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `agent_role` | str | yes | Must match a policy's `agent_role` exactly. |
+| `user_id` | str | yes | The user on whose behalf the agent is acting. |
+| `source_id` | str | yes | The data source being accessed. |
+| `sensitivity_level` | SensitivityLevel | yes | `LOW`, `MEDIUM`, `HIGH`, or `CRITICAL`. |
+| `session_id` | str | yes | Groups related retrievals. Enforces cross-agent isolation. |
+| `agent_id` | str | no | Registered agent instance ID. When supplied, triggers identity binding checks — registry approval, role permissions, and key binding. Stamped on every audit event for full traceability. |
+| `task_type` | str | no | Checked against `allowed_tasks` / `denied_tasks` if provided. |
+| `tenant_id` | str | no | Override the tenant set at construction time. |
+
+Action lineage: After a successful retrieval, record what the agent did with the context:
+
+```bash title="Record downstream action"
+result = get_credit_score("cust_abc")
+
+guard.record_action(
+    event_id=guard.last_event_id,   # thread-local, set by protect()
+    action_type="loan_decision",
+    detail={"outcome": "approved", "amount": 250000},
+    outcome="approved",
+)
+```
+
+`guard.last_event_id` is stored in `threading.local()` for sync code. For async agents using `protect_async`, it uses `contextvars.ContextVar` — safe under `asyncio.gather()` and concurrent async tasks.
+

@@ -1,0 +1,39 @@
+---
+title: "Context evaluate"
+description: "Endpoints: POST /v1/context/evaluate — Evaluate a retrieval request against policy"
+---
+
+## Context evaluate
+
+**`POST /v1/context/evaluate`**  
+Evaluate a retrieval request against policy
+
+```json title="Request / Response"
+# Request body
+{
+  "agent_role":        "loan_underwriter",
+  "user_id":           "user_001",
+  "source_id":         "credit_scores",
+  "sensitivity_level": "high",
+  "session_id":        "sess_abc",
+  "task_type":         "credit_decision",  # optional
+  "agent_id":          "loan-agent-prod-01" # optional — enables identity binding
+}
+
+# Response (ALLOW)
+{
+  "decision":    "ALLOW",
+  "policy_name": "loan_underwriter_policy",
+  "reason":      "all checks passed",
+  "event_id":    "evt_abc123"
+}
+
+# Response (DENY)
+{
+  "decision":    "DENY",
+  "policy_name": "loan_underwriter_policy",
+  "reason":      "source 'executive_comms' is on denylist",
+  "event_id":    "evt_def456"
+}
+```
+

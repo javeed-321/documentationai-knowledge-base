@@ -1,0 +1,14 @@
+---
+title: "Tenant enforcement settings"
+description: "Endpoints: PATCH /v1/admin/tenants/{tenant_id}/settings — Update per-tenant enforcement flags — superadmin only"
+---
+
+## Tenant enforcement settings
+
+**`PATCH /v1/admin/tenants/{tenant_id}/settings`**  
+Update per-tenant enforcement flags — superadmin only
+
+| Field | Type | Description |
+|---|---|---|
+| `require_agent_id` | bool | When `true`, every evaluate call for this tenant must supply an `agent_id`. Anonymous callers are denied with `policy_name="agent_id_required"`. Takes effect immediately — no restart needed. The global server flag `AUTOPIL_REQUIRE_AGENT_ID=1` applies this to all tenants at once. |
+

@@ -1,0 +1,51 @@
+---
+title: "API keys"
+description: "Keys support three permission scopes:"
+---
+
+## API keys
+
+**`POST /v1/keys`**  
+Create an API key — plaintext returned once, store immediately
+
+**`GET /v1/keys`**  
+List keys for the tenant (no plaintext)
+
+**`DELETE /v1/keys/{key_id}`**  
+Revoke a key immediately
+
+**`POST /v1/keys/{key_id}/rotate`**  
+Rotate a key — creates replacement with same scope/expiry, revokes original
+
+**`PATCH /v1/keys/{key_id}/binding`**  
+Bind a key to a registered agent or restrict it to specific roles
+
+Keys support three permission scopes:
+
+| Scope | Access | Use case |
+|---|---|---|
+| `admin` | All endpoints | Dashboard, policy management, key management |
+| `read` | GET + evaluate | Monitoring, audit review, read-only integrations |
+| `evaluate` | `POST /v1/context/evaluate` only | Agent runtime — least privilege for production agents |
+
+```bash title="Create a scoped key with expiry"
+curl -X POST http://localhost:8000/v1/keys \
+  -H "X-API-Key: apl_yourkey" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name":         "agent-runtime",
+    "scope":        "evaluate",
+    "expires_days": 90
+  }'
+
+# Response — store the key now, it will not be shown again
+{
+  "key_id":     "key_abc123",
+  "name":       "agent-runtime",
+  "key":        "apl_...",
+  "scope":      "evaluate",
+  "expires_at": "2026-07-05T00:00:00",
+  "created_at": "2026-04-06T00:00:00"
+}
+```
+

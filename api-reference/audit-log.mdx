@@ -1,0 +1,43 @@
+---
+title: "Audit log"
+description: "Endpoints: GET /v1/audit/events — List audit events (query: limit, agent_role, decision, source_id); GET /v1/audit/sessions/{session_id} — Full audit trail for a session…"
+---
+
+## Audit log
+
+**`GET /v1/audit/events`**  
+List audit events (query: limit, agent_role, decision, source_id)
+
+**`GET /v1/audit/sessions/{session_id}`**  
+Full audit trail for a session — all events in order
+
+**`GET /v1/audit/stats`**  
+Aggregate stats — totals, deny rate, top roles, by_source_type breakdown
+
+**`GET /v1/audit/verify`**  
+Verify SHA-256 hash chain integrity for this tenant
+
+**`GET /v1/audit/retention`**  
+Active retention policy and last purge anchor for this tenant
+
+**`POST /v1/audit/lineage`**  
+Record a downstream action linked to an audit event
+
+**`GET /v1/audit/lineage/{event_id}`**  
+Event + all linked downstream actions
+
+```json title="GET /v1/audit/stats — by_source_type breakdown"
+{
+  "total": 1247,
+  "allowed": 1118,
+  "denied": 129,
+  "by_source_type": {
+    "sdk":           { "total": 847, "allowed": 790, "denied": 57 },
+    "api":           { "total": 203, "allowed": 178, "denied": 25 },
+    "langchain":     { "total": 87,  "allowed": 80,  "denied": 7  },
+    "bedrock":       { "total": 64,  "allowed": 58,  "denied": 6  },
+    "rest":          { "total": 46,  "allowed": 12,  "denied": 34 }
+  }
+}
+```
+

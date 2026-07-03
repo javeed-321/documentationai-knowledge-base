@@ -1,6 +1,6 @@
 ---
-title: Java SDK
-description: A Jackson-only REST client published as ai.vibrantcapital:autopil-java.
+title: "Java SDK"
+description: "A Jackson-only REST client published as ai.vibrantcapital:autopil-java:0.1.0. Uses java.net.http.HttpClient (no external HTTP library). Requires Java 17+."
 ---
 
 ## Java SDK
@@ -9,7 +9,7 @@ A Jackson-only REST client published as `ai.vibrantcapital:autopil-java:0.1.0`. 
 
 Set `AUTOPIL_BASE_URL` and `AUTOPIL_API_KEY` as environment variables. Get your key from the dashboard under Settings → API Keys (`evaluate` scope for agent code).
 
-```xml title="pom.xml"
+```bash title="pom.xml"
 <dependency>
   <groupId>ai.vibrantcapital</groupId>
   <artifactId>autopil-java</artifactId>
@@ -43,7 +43,7 @@ AuditTrail trail = client.audit().getSession(sessionId);
 List<AuditEvent> events = client.audit().listEvents("loan_underwriter", "DENY", 50);
 ```
 
-## Client resources
+Client resources:
 
 | Resource | Methods |
 |---|---|
@@ -54,5 +54,6 @@ List<AuditEvent> events = client.audit().listEvents("loan_underwriter", "DENY", 
 | `client.health()` | — no auth required |
 
 <Callout kind="info">
-  `AutoPILException` (unchecked) carries `getStatusCode()` and `getDetail()`. All request types use the builder pattern. A JUnit 5 test suite is included.
+  `AutoPILException` (unchecked) carries `getStatusCode()` and `getDetail()`. All request types use builder pattern. JUnit 5 test suite included.
 </Callout>
+

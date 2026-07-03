@@ -1,6 +1,6 @@
 ---
-title: Evaluation Order
-description: The exact order in which policy conditions are checked — evaluation stops at the first match.
+title: "Evaluation order"
+description: "Evaluation stops at the first matching condition:"
 ---
 
 ## Evaluation order
@@ -8,39 +8,33 @@ description: The exact order in which policy conditions are checked — evaluati
 Evaluation stops at the first matching condition:
 
 <Steps>
-  <Step title="Agent ID" icon="fingerprint">
-    If `permitted_agent_ids` is set on the policy: deny if `agent_id` is absent; deny if `agent_id` does not match any pattern in the list.
+  <Step title="Agent ID">
+    if `permitted_agent_ids` is set on the policy: deny if `agent_id` is absent; deny if `agent_id` does not match any pattern in the list.
   </Step>
-
-  <Step title="Denied sources" icon="ban">
-    If `source_id` is in `denied_sources`, immediately deny.
+  <Step title="Denied sources">
+    if `source_id` is in `denied_sources`, immediately deny.
   </Step>
-
-  <Step title="Denied tasks" icon="x-circle">
-    If `task_type` is in `denied_tasks`, deny.
+  <Step title="Denied tasks">
+    if `task_type` is in `denied_tasks`, deny.
   </Step>
-
-  <Step title="Allowed tasks" icon="filter">
-    If `allowed_tasks` is non-empty and `task_type` is not in it, deny.
+  <Step title="Allowed tasks">
+    if `allowed_tasks` is non-empty and `task_type` is not in it, deny.
   </Step>
-
-  <Step title="Allowed sources" icon="filter">
-    If `allowed_sources` is non-empty and `source_id` is not in it, deny.
+  <Step title="Allowed sources">
+    if `allowed_sources` is non-empty and `source_id` is not in it, deny.
   </Step>
-
-  <Step title="Sensitivity ceiling" icon="gauge">
-    The effective ceiling is the more restrictive of `max_sensitivity` and any applicable `sensitivity_decay` rule for the session's current age. If `sensitivity_level` exceeds the effective ceiling, deny.
+  <Step title="Sensitivity ceiling">
+    the effective ceiling is the more restrictive of `max_sensitivity` and any applicable `sensitivity_decay` rule for the session's current age. If `sensitivity_level` exceeds the effective ceiling, deny.
   </Step>
-
-  <Step title="Allow" icon="check">
-    All checks passed.
+  <Step title="Allow">
+    all checks passed.
   </Step>
-
-  <Step title="Default deny" icon="shield-off">
-    No policy found for this `agent_role`.
+  <Step title="Default deny">
+    no policy found for this `agent_role`.
   </Step>
 </Steps>
 
 <Callout kind="info">
-  `task_type` and `agent_id` are both optional in requests. Task-level and agent-ID checks are skipped when the corresponding request field and policy field are both absent.
+  Note: `task_type` and `agent_id` are both optional in requests. Task-level and agent-ID checks are skipped when the corresponding request field and policy field are both absent.
 </Callout>
+

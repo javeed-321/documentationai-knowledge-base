@@ -1,13 +1,13 @@
 ---
-title: Choosing an Integration Pattern
-description: Decide between the embedded decorator and the REST API — and how user identity flows through each.
+title: "Choosing an integration pattern"
+description: "AutoPIL has two primary integration paths for Python — the embedded decorator and the REST API."
 ---
 
 ## Choosing an integration pattern
 
 AutoPIL has two primary integration paths for Python — the embedded decorator and the REST API. They enforce the same policies and write to the same audit log, but the right choice depends on how your stack is deployed and how user identity flows through your system.
 
-## Decision guide
+Decision guide:
 
 | Scenario | Use | Why |
 |---|---|---|
@@ -19,74 +19,61 @@ AutoPIL has two primary integration paths for Python — the embedded decorator 
 | Already using LangChain, LlamaIndex, Bedrock, or OpenAI Agents SDK | Framework guard for that library | Wraps at the tool or query-engine level without changing your retrieval code |
 | Enforcing governance without touching agent code | `AutoPILMiddleware` (ASGI) | Intercepts every request at the HTTP layer; agents need no changes |
 
-## The `user_id` distinction
+The `user_id` distinction: `user_id` identifies who triggered a retrieval in the audit log — it does not affect allow/deny decisions. How it flows differs between the two patterns:
 
-`user_id` identifies who triggered a retrieval in the audit log — it does not affect allow/deny decisions. How it flows differs between the two patterns:
-
-| | Embedded decorator | REST API |
+|  | Embedded decorator | REST API |
 |---|---|---|
 | Set at | Decoration time — fixed per function | Request time — varies per call |
 | Good for | Service accounts, internal agents with a single identity | Multi-user apps where attribution matters per request |
 | Tradeoff | All calls to the function share one `user_id` in the audit trail | Each call carries its own `user_id` — more granular audit trail |
 
-<Callout kind="info">
-  `agent_role` works the same way. In both patterns, `agent_role` is developer-supplied — it declares the identity of the access path, not a runtime claim by the agent. The agent cannot change it. In the decorator, it is fixed at decoration time. In the REST API, it is a declared field in the request payload, trusted because the API key is already authenticated.
+<Callout kind="alert">
+  agent_role works the same way. In both patterns, `agent_role` is developer-supplied — it declares the identity of the access path, not a runtime claim by the agent. The agent cannot change it. In the decorator, it is fixed at decoration time. In the REST API, it is a declared field in the request payload trusted because the API key is already authenticated.
 </Callout>
 
-## Side-by-side example
+Side-by-side example — the same governance check (analyst accessing financial reports at high sensitivity) written both ways:
 
-The same governance check (analyst accessing financial reports at high sensitivity) written both ways:
+```python title="Embedded decorator — fixed identity, same process"
+from autopil import ContextGuard
 
-<Tabs>
-  <Tab title="Embedded decorator" icon="code">
-    Fixed identity, same process.
+guard = ContextGuard(policy_path="policies/", audit_db="autopil.db")
 
-    ```python title="decorator.py"
-    from autopil import ContextGuard
+# agent_role and user_id are fixed here — the agent cannot change them
+@guard.protect(
+    agent_role="analyst",
+    user_id="svc-reporting-agent",   # same for every call
+    source_id="financial_reports",
+    sensitivity_level="high",
+)
+def retrieve_report(query: str):
+    return vectorstore.search(query)
+```
 
-    guard = ContextGuard(policy_path="policies/", audit_db="autopil.db")
+```json title="REST API — per-request identity, any language"
+import httpx
 
-    # agent_role and user_id are fixed here — the agent cannot change them
-    @guard.protect(
-        agent_role="analyst",
-        user_id="svc-reporting-agent",   # same for every call
-        source_id="financial_reports",
-        sensitivity_level="high",
+def retrieve_report(query: str, user_id: str, session_id: str):
+    r = httpx.post(
+        "https://your-app.onrender.com/v1/context/evaluate",
+        headers={"X-API-Key": AUTOPIL_API_KEY},
+        json={
+            "agent_role": "analyst",
+            "user_id": user_id,           # varies per caller
+            "source_id": "financial_reports",
+            "sensitivity_level": "high",
+            "query": query,
+            "session_id": session_id,
+        },
+        timeout=10,
     )
-    def retrieve_report(query: str):
-        return vectorstore.search(query)
-    ```
-  </Tab>
+    r.raise_for_status()
+    result = r.json()
+    if result["decision"] == "DENY":
+        raise PermissionError(result["reason"])
+    return vectorstore.search(query)
+```
 
-  <Tab title="REST API" icon="globe">
-    Per-request identity, any language.
-
-    ```python title="rest.py"
-    import httpx
-
-    def retrieve_report(query: str, user_id: str, session_id: str):
-        r = httpx.post(
-            "https://your-app.onrender.com/v1/context/evaluate",
-            headers={"X-API-Key": AUTOPIL_API_KEY},
-            json={
-                "agent_role": "analyst",
-                "user_id": user_id,           # varies per caller
-                "source_id": "financial_reports",
-                "sensitivity_level": "high",
-                "query": query,
-                "session_id": session_id,
-            },
-            timeout=10,
-        )
-        r.raise_for_status()
-        result = r.json()
-        if result["decision"] == "DENY":
-            raise PermissionError(result["reason"])
-        return vectorstore.search(query)
-    ```
-  </Tab>
-</Tabs>
-
-<Callout kind="warning">
+<Callout kind="alert">
   Never use the embedded decorator against a remote AutoPIL instance. If your AutoPIL server is on Render, calling `ContextGuard(audit_db="...")` locally opens a separate database — your events will not appear in the shared audit log and policies will not be in sync. Use the REST pattern for any hosted deployment.
 </Callout>
+
