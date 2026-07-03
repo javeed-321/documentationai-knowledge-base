@@ -1,15 +1,17 @@
 ---
 title: "AutoPIL Documentation"
+description: "Runtime governance for autonomous AI agents — enforce data-access policy at the retrieval layer and prove every decision with a tamper-evident audit trail."
 show-sidebar: false
 show-toc: false
 show-page-navigation: false
-show-parent-label: false
 content-width: wide
 ---
 
-## AutoPIL Documentation
+<Callout kind="tip">
+  **Govern the context. Trust the agent.™** AutoPIL sits between your agents and their data — evaluating every retrieval request against policy *before* information ever enters the context window.
+</Callout>
 
-Runtime governance for autonomous AI agents. Enforce data-access policy at the retrieval layer — before information enters an agent's context window — and prove every decision with a tamper-evident audit trail.
+## Start here
 
 <Columns cols="2">
   <Card title="Quick start" href="/getting-started/quickstart" icon="zap" horizontal="false">
@@ -21,25 +23,48 @@ Runtime governance for autonomous AI agents. Enforce data-access policy at the r
   </Card>
 </Columns>
 
-### Get started
+## How it works
 
-<Columns cols="3">
-  <Card title="Quick start" href="/getting-started/quickstart" icon="zap" horizontal="false">
-    Protect your first retrieval function with a single decorator.
-  </Card>
+Data catalogs govern data *upstream*. Output filters govern responses *downstream*. AutoPIL governs the layer in between — the context an agent is allowed to retrieve.
 
-  <Card title="Installation" href="/getting-started/installation" icon="download" horizontal="false">
-    Add the AutoPIL package and configure your environment.
-  </Card>
+```mermaid
+flowchart LR
+    A[AI Agent] -->|retrieval request| B{AutoPIL<br/>Policy Engine}
+    B -->|allow / deny / mask| C[(Data sources)]
+    B -.->|hash-chained record| D[(Audit log)]
+```
 
-  <Card title="First-start bootstrap" href="/getting-started/first-start" icon="power" horizontal="false">
-    Initialize the engine, load policies, and verify enforcement is live.
-  </Card>
-</Columns>
+## Get started in three steps
 
-### Core concepts
+<Steps>
+  <Step title="Install" icon="download">
+    Add the AutoPIL package to your project and set your environment variables.
 
-<Columns cols="4">
+    ```bash
+    pip install autopil
+    ```
+  </Step>
+
+  <Step title="Bootstrap the engine" icon="power">
+    Initialize AutoPIL, point it at a policy directory, and confirm enforcement is live.
+
+    See [First-start bootstrap](/getting-started/first-start) for the full walkthrough.
+  </Step>
+
+  <Step title="Protect a retrieval" icon="shield">
+    Wrap any retrieval function with a single decorator — every call is now evaluated against policy.
+
+    ```python
+    @guard.protect()
+    def fetch_customer_records(query: str):
+        ...
+    ```
+  </Step>
+</Steps>
+
+## Core concepts
+
+<Columns cols="2">
   <Card title="Architecture" href="/core-concepts/architecture" icon="network" horizontal="false">
     How the governance layer sits between your agents and their data sources.
   </Card>
@@ -57,9 +82,9 @@ Runtime governance for autonomous AI agents. Enforce data-access policy at the r
   </Card>
 </Columns>
 
-### Policies & integration
+## Policies & integration
 
-<Columns cols="4">
+<Columns cols="2">
   <Card title="Policy file format" href="/policy-guide/policy-format" icon="file-code" horizontal="false">
     Write YAML policies with source allowlists, denylists, and sensitivity ceilings.
   </Card>
@@ -77,9 +102,9 @@ Runtime governance for autonomous AI agents. Enforce data-access policy at the r
   </Card>
 </Columns>
 
-### API reference
+## API reference
 
-<Columns cols="4">
+<Columns cols="2">
   <Card title="Authentication" href="/api-reference/authentication" icon="lock" horizontal="false">
     Provision API keys and authenticate requests to the governance API.
   </Card>
@@ -97,9 +122,9 @@ Runtime governance for autonomous AI agents. Enforce data-access policy at the r
   </Card>
 </Columns>
 
-### Deploy & operate
+## Deploy & operate
 
-<Columns cols="4">
+<Columns cols="2">
   <Card title="Docker" href="/deployment/docker" icon="container" horizontal="false">
     Run AutoPIL as a container in staging or production.
   </Card>
