@@ -14,7 +14,7 @@
   },
   "customCss": [
     {
-      "path": "Home.css"
+      "src": "Home.css"
     }
   ],
   "navigation": {
