@@ -16,8 +16,8 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Getting Started",
-        "icon": "rocket",
+        "tab": "Documentation",
+        "icon": "book",
         "groups": [
           {
             "group": "Getting Started",
@@ -40,13 +40,7 @@
                 "icon": "power"
               }
             ]
-          }
-        ]
-      },
-      {
-        "tab": "Core Concepts",
-        "icon": "layers",
-        "groups": [
+          },
           {
             "group": "Core Concepts",
             "icon": "layers",
@@ -73,13 +67,7 @@
                 "icon": "fingerprint"
               }
             ]
-          }
-        ]
-      },
-      {
-        "tab": "Policy Guide",
-        "icon": "shield",
-        "groups": [
+          },
           {
             "group": "Policy Guide",
             "icon": "shield",
@@ -119,6 +107,100 @@
                 "title": "Agent ID binding in policies",
                 "path": "policy-guide/agent-id-binding",
                 "icon": "lock"
+              }
+            ]
+          },
+          {
+            "group": "SDKs & Integrations",
+            "icon": "plug",
+            "expandable": false,
+            "pages": [
+              {
+                "title": "Choosing an integration pattern",
+                "path": "sdks/integration-patterns",
+                "icon": "git-branch"
+              },
+              {
+                "title": "Python SDK",
+                "path": "sdks/python-sdk",
+                "icon": "code"
+              },
+              {
+                "title": "Connecting to a hosted instance (Render / production)",
+                "path": "sdks/connecting-to-hosted-instance",
+                "icon": "cloud"
+              },
+              {
+                "title": "Async decorator \u2014 protect_async",
+                "path": "sdks/async-protect-async",
+                "icon": "zap"
+              },
+              {
+                "title": "ASGI Middleware",
+                "path": "sdks/middleware",
+                "icon": "layers"
+              },
+              {
+                "title": "MCP Server",
+                "path": "sdks/mcp-server",
+                "icon": "server"
+              },
+              {
+                "title": "Framework integrations",
+                "path": "sdks/frameworks",
+                "icon": "boxes"
+              },
+              {
+                "title": "Go SDK",
+                "path": "sdks/go-sdk",
+                "icon": "code"
+              },
+              {
+                "title": "Java SDK",
+                "path": "sdks/java-sdk",
+                "icon": "code"
+              }
+            ]
+          },
+          {
+            "group": "Deployment",
+            "icon": "server",
+            "expandable": false,
+            "pages": [
+              {
+                "title": "Local development",
+                "path": "deployment/local",
+                "icon": "laptop"
+              },
+              {
+                "title": "Docker",
+                "path": "deployment/docker",
+                "icon": "container"
+              },
+              {
+                "title": "Postgres",
+                "path": "deployment/postgres",
+                "icon": "database"
+              },
+              {
+                "title": "OpenTelemetry",
+                "path": "deployment/opentelemetry",
+                "icon": "activity"
+              },
+              {
+                "title": "Alerting (SMTP)",
+                "path": "deployment/alerting",
+                "icon": "bell"
+              },
+              {
+                "title": "Retention",
+                "path": "deployment/retention",
+                "icon": "clock"
+              },
+              {
+                "title": "PII masking",
+                "path": "deployment/pii-masking",
+                "icon": "eye-off"
               }
             ]
           }
@@ -532,112 +614,6 @@
                 "icon": "arrow-down-to-line",
                 "openapi": "api-reference/openapi.yaml GET /health",
                 "openapi-mode": "auto"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "SDKs & Integrations",
-        "icon": "plug",
-        "groups": [
-          {
-            "group": "SDKs & Integrations",
-            "icon": "plug",
-            "expandable": false,
-            "pages": [
-              {
-                "title": "Choosing an integration pattern",
-                "path": "sdks/integration-patterns",
-                "icon": "git-branch"
-              },
-              {
-                "title": "Python SDK",
-                "path": "sdks/python-sdk",
-                "icon": "code"
-              },
-              {
-                "title": "Connecting to a hosted instance (Render / production)",
-                "path": "sdks/connecting-to-hosted-instance",
-                "icon": "cloud"
-              },
-              {
-                "title": "Async decorator \u2014 protect_async",
-                "path": "sdks/async-protect-async",
-                "icon": "zap"
-              },
-              {
-                "title": "ASGI Middleware",
-                "path": "sdks/middleware",
-                "icon": "layers"
-              },
-              {
-                "title": "MCP Server",
-                "path": "sdks/mcp-server",
-                "icon": "server"
-              },
-              {
-                "title": "Framework integrations",
-                "path": "sdks/frameworks",
-                "icon": "boxes"
-              },
-              {
-                "title": "Go SDK",
-                "path": "sdks/go-sdk",
-                "icon": "code"
-              },
-              {
-                "title": "Java SDK",
-                "path": "sdks/java-sdk",
-                "icon": "code"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Deployment",
-        "icon": "server",
-        "groups": [
-          {
-            "group": "Deployment",
-            "icon": "server",
-            "expandable": false,
-            "pages": [
-              {
-                "title": "Local development",
-                "path": "deployment/local",
-                "icon": "laptop"
-              },
-              {
-                "title": "Docker",
-                "path": "deployment/docker",
-                "icon": "container"
-              },
-              {
-                "title": "Postgres",
-                "path": "deployment/postgres",
-                "icon": "database"
-              },
-              {
-                "title": "OpenTelemetry",
-                "path": "deployment/opentelemetry",
-                "icon": "activity"
-              },
-              {
-                "title": "Alerting (SMTP)",
-                "path": "deployment/alerting",
-                "icon": "bell"
-              },
-              {
-                "title": "Retention",
-                "path": "deployment/retention",
-                "icon": "clock"
-              },
-              {
-                "title": "PII masking",
-                "path": "deployment/pii-masking",
-                "icon": "eye-off"
               }
             ]
           }
