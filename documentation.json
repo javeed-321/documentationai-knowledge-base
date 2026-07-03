@@ -12,6 +12,11 @@
       "text": "#c1c1c1"
     }
   },
+  "customCss": [
+    {
+      "path": "Home.css"
+    }
+  ],
   "navigation": {
     "tabs": [
       {
@@ -206,7 +211,8 @@
         ],
         "path": "Home",
         "show-sidebar": false,
-        "show-toc": false
+        "show-toc": false,
+        "content-width": "wide"
       },
       {
         "tab": "API Reference",
