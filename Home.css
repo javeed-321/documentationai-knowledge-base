@@ -33,7 +33,7 @@
     line-height: 1.12 !important;
     color: #0B1220 !important;
     margin: 0 !important;
-    padding: 0 0 16px !important;
+    padding: 0 !important;
     border-bottom: none !important;
     position: relative !important;
   }
@@ -45,16 +45,6 @@
     letter-spacing: 0.16em !important;
     color: #0891B2 !important;
     margin: 0 0 14px !important;
-  }
-  .dai-article h2#autopil-documentation::after {
-    content: "" !important;
-    position: absolute !important;
-    left: 0 !important;
-    bottom: 0 !important;
-    width: 60px !important;
-    height: 3px !important;
-    border-radius: 3px !important;
-    background: linear-gradient(90deg, #0891B2, #22D3EE) !important;
   }
   &.dark .dai-article h2#autopil-documentation { color: #F2F6F8 !important; }
   &.dark .dai-article h2#autopil-documentation::before { color: #22D3EE !important; }
