@@ -2,13 +2,13 @@
   "name": "AutoPIL",
   "colors": {
     "light": {
-      "brand": "#4F46E5",
-      "heading": "#1a1a1a",
+      "brand": "#0891B2",
+      "heading": "#0B1220",
       "text": "#374151"
     },
     "dark": {
-      "brand": "#818CF8",
-      "heading": "#f2f2f2",
+      "brand": "#22D3EE",
+      "heading": "#F2F6F8",
       "text": "#c1c1c1"
     }
   },
