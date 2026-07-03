@@ -1,0 +1,46 @@
+---
+title: "MCP Server"
+description: "Connect AI assistants to the AutoPIL documentation using the Model Context Protocol (MCP)."
+---
+
+Connect AI assistants to your documentation using the Model Context Protocol. The AutoPIL docs expose an MCP server so tools like Claude, Cursor, and ChatGPT can search these docs and answer questions directly.
+
+## What is MCP?
+
+The Model Context Protocol (MCP) is an open standard that enables AI assistants like Claude, ChatGPT, and other LLMs to securely access your documentation content. It provides a standardized way for AI models to interact with external data sources.
+
+## How to use
+
+<Steps>
+  <Step title="Copy the MCP server URL" icon="copy">
+    Copy your MCP server URL from the documentation dashboard.
+  </Step>
+
+  <Step title="Add it to your MCP client" icon="settings">
+    Add the URL to your MCP client configuration — for example, Claude Desktop, Cursor, or any MCP-compatible application.
+  </Step>
+
+  <Step title="Ask questions" icon="message-circle">
+    Start asking questions about your documentation directly in your AI assistant.
+  </Step>
+</Steps>
+
+## MCP endpoint
+
+The server uses **Server-Sent Events (SSE)** transport. Your MCP server URL uses your published documentation domain and follows this pattern:
+
+```text title="MCP Server URL"
+https://<your-docs-domain>/_mcp
+```
+
+<Callout kind="info">
+  Publish your documentation to enable the MCP server, then copy your live server URL from the documentation dashboard.
+</Callout>
+
+## Available tools
+
+Tools exposed by this MCP server:
+
+### search_documentation
+
+Search through the documentation using hybrid search (semantic + keyword).

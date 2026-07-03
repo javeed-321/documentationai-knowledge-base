@@ -42,6 +42,11 @@
                 "title": "First-start bootstrap",
                 "path": "getting-started/first-start",
                 "icon": "power"
+              },
+              {
+                "title": "MCP Server",
+                "path": "getting-started/mcp",
+                "icon": "bot"
               }
             ]
           },
