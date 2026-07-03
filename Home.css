@@ -15,6 +15,7 @@
   [data-component="Heading"] > span { display: none !important; }
   .dai-feedback { display: none !important; }   /* "Was this helpful?" block */
   .dai-footer   { display: none !important; }   /* page footer */
+  .dai-page-nav { display: none !important; }   /* prev/next page navigation */
 
   /* ─── Content column (wide, no sidebar) ─── */
   .dai-article { padding-top: 24px !important; }
