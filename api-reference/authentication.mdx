@@ -5,8 +5,3 @@ description: "API key authentication for all /v1/ routes via the X-API-Key heade
 
 All `/v1/*` routes require an API key in the `X-API-Key` header. The server returns HTTP 401 if missing and 403 if invalid or revoked.
 
-```bash title="All authenticated requests"
-curl https://api.autopil.ai/v1/... \
-  -H "X-API-Key: apl_yourkey"
-```
-

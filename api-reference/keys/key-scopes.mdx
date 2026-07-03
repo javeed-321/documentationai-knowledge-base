@@ -1,0 +1,13 @@
+---
+title: "API key scopes"
+description: "Create, list, rotate, revoke, and bind API keys across three permission scopes."
+---
+
+Keys support three permission scopes:
+
+| Scope | Access | Use case |
+|---|---|---|
+| `admin` | All endpoints | Dashboard, policy management, key management |
+| `read` | GET + evaluate | Monitoring, audit review, read-only integrations |
+| `evaluate` | `POST /v1/context/evaluate` only | Agent runtime — least privilege for production agents |
+

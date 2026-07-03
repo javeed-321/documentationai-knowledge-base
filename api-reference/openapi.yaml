@@ -741,7 +741,7 @@ paths:
                   total: { type: integer }
                   approved: { type: integer }
                   pending: { type: integer }
-                  deny_rate: { type: number }
+                  deny_rate: { type: number }  # TODO: verify field name against live API — source describes "deny rates" in prose, no JSON example given
   /v1/admin/tenants:
     post:
       tags: [Admin]
@@ -844,6 +844,8 @@ paths:
                 type: object
                 properties:
                   status: { type: string, example: ok }
+              example:
+                status: ok
 components:
   securitySchemes:
     apiKeyAuth:

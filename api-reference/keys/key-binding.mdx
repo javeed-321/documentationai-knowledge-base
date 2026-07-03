@@ -10,14 +10,3 @@ Bind a key to a specific registered agent and/or restrict it to a set of roles. 
 | `bound_agent_id` | string | The key will only accept evaluate calls that present this exact `agent_id`. Requests with a different or missing `agent_id` are denied with `policy_name="key_agent_binding"`. |
 | `permitted_roles` | list | The key will only accept evaluate calls that claim a role in this list. Empty list or omitted = no role restriction. |
 
-```bash title="Bind a key to an agent and restrict its roles"
-curl -X PATCH https://api.autopil.ai/v1/keys/key_abc123/binding \
-  -H "X-API-Key: apl_yourkey" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "bound_agent_id":  "fraud-analyst-prod-01",
-    "permitted_roles": ["transaction_analyst", "account_profiler"]
-  }'
-# → { "status": "ok" }
-```
-

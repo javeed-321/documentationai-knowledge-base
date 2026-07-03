@@ -129,29 +129,14 @@
         "icon": "code",
         "groups": [
           {
-            "group": "API Reference",
-            "icon": "code",
+            "group": "Concepts",
+            "icon": "book-open",
             "expandable": false,
             "pages": [
               {
                 "title": "Authentication",
                 "path": "api-reference/authentication",
                 "icon": "lock"
-              },
-              {
-                "title": "Context evaluate",
-                "path": "api-reference/context-evaluate",
-                "icon": "scale"
-              },
-              {
-                "title": "Audit log",
-                "path": "api-reference/audit-log",
-                "icon": "scroll-text"
-              },
-              {
-                "title": "Log retention",
-                "path": "api-reference/log-retention",
-                "icon": "clock"
               },
               {
                 "title": "Session retention",
@@ -162,46 +147,391 @@
                 "title": "PII masking",
                 "path": "api-reference/pii-masking",
                 "icon": "eye-off"
+              }
+            ]
+          },
+          {
+            "group": "Context",
+            "icon": "scale",
+            "expandable": false,
+            "pages": [
+              {
+                "title": "Evaluate a retrieval request",
+                "path": "api-reference/context/evaluate-context",
+                "icon": "plus",
+                "openapi": "api-reference/openapi.yaml POST /v1/context/evaluate",
+                "openapi-mode": "auto"
+              }
+            ]
+          },
+          {
+            "group": "Audit log",
+            "icon": "scroll-text",
+            "expandable": false,
+            "pages": [
+              {
+                "title": "List audit events",
+                "path": "api-reference/audit/list-audit-events",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/audit/events",
+                "openapi-mode": "auto"
               },
               {
-                "title": "Policies",
-                "path": "api-reference/policies",
-                "icon": "shield"
+                "title": "Full audit trail for a session",
+                "path": "api-reference/audit/get-session-audit",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/audit/sessions/{session_id}",
+                "openapi-mode": "auto"
               },
               {
-                "title": "Alerts",
-                "path": "api-reference/alerts",
-                "icon": "bell"
+                "title": "Aggregate audit stats",
+                "path": "api-reference/audit/get-audit-stats",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/audit/stats",
+                "openapi-mode": "auto"
               },
               {
-                "title": "Sessions",
-                "path": "api-reference/sessions",
-                "icon": "activity"
+                "title": "Verify hash-chain integrity",
+                "path": "api-reference/audit/verify-audit-chain",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/audit/verify",
+                "openapi-mode": "auto"
               },
               {
-                "title": "API keys",
-                "path": "api-reference/api-keys",
-                "icon": "key"
+                "title": "Retention policy and last purge anchor",
+                "path": "api-reference/audit/get-audit-retention",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/audit/retention",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Record a downstream action",
+                "path": "api-reference/audit/record-lineage",
+                "icon": "plus",
+                "openapi": "api-reference/openapi.yaml POST /v1/audit/lineage",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Event and its downstream actions",
+                "path": "api-reference/audit/get-lineage",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/audit/lineage/{event_id}",
+                "openapi-mode": "auto"
+              }
+            ]
+          },
+          {
+            "group": "Retention",
+            "icon": "clock",
+            "expandable": false,
+            "pages": [
+              {
+                "title": "Log retention",
+                "path": "api-reference/settings/log-retention",
+                "icon": "info"
+              },
+              {
+                "title": "Get retention settings",
+                "path": "api-reference/settings/get-retention-settings",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/settings/retention",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Update retention settings",
+                "path": "api-reference/settings/update-retention-settings",
+                "icon": "pencil",
+                "openapi": "api-reference/openapi.yaml PUT /v1/settings/retention",
+                "openapi-mode": "auto"
+              }
+            ]
+          },
+          {
+            "group": "Policies",
+            "icon": "shield",
+            "expandable": false,
+            "pages": [
+              {
+                "title": "List active policies",
+                "path": "api-reference/policies/list-policies",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/policies",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Create a policy",
+                "path": "api-reference/policies/create-policy",
+                "icon": "plus",
+                "openapi": "api-reference/openapi.yaml POST /v1/policies",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Update a policy",
+                "path": "api-reference/policies/update-policy",
+                "icon": "pencil",
+                "openapi": "api-reference/openapi.yaml PUT /v1/policies/{policy_id}",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Soft-delete a policy",
+                "path": "api-reference/policies/delete-policy",
+                "icon": "trash-2",
+                "openapi": "api-reference/openapi.yaml DELETE /v1/policies/{policy_id}",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Policy version history",
+                "path": "api-reference/policies/get-policy-history",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/policies/{policy_id}/history",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Restore a policy",
+                "path": "api-reference/policies/restore-policy",
+                "icon": "plus",
+                "openapi": "api-reference/openapi.yaml POST /v1/policies/{policy_id}/restore",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Reload policies from disk",
+                "path": "api-reference/policies/reload-policies",
+                "icon": "plus",
+                "openapi": "api-reference/openapi.yaml POST /v1/policies/reload",
+                "openapi-mode": "auto"
+              }
+            ]
+          },
+          {
+            "group": "Alerts",
+            "icon": "bell",
+            "expandable": false,
+            "pages": [
+              {
+                "title": "Alert rule types",
+                "path": "api-reference/alerts/alert-rule-types",
+                "icon": "info"
+              },
+              {
+                "title": "Create an alert rule",
+                "path": "api-reference/alerts/create-alert-rule",
+                "icon": "plus",
+                "openapi": "api-reference/openapi.yaml POST /v1/alerts/rules",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "List alert rules",
+                "path": "api-reference/alerts/list-alert-rules",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/alerts/rules",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Update an alert rule",
+                "path": "api-reference/alerts/update-alert-rule",
+                "icon": "pencil",
+                "openapi": "api-reference/openapi.yaml PUT /v1/alerts/rules/{rule_id}",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Delete an alert rule",
+                "path": "api-reference/alerts/delete-alert-rule",
+                "icon": "trash-2",
+                "openapi": "api-reference/openapi.yaml DELETE /v1/alerts/rules/{rule_id}",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "List fired alert deliveries",
+                "path": "api-reference/alerts/list-fired-alerts",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/alerts/fired",
+                "openapi-mode": "auto"
+              }
+            ]
+          },
+          {
+            "group": "Sessions",
+            "icon": "activity",
+            "expandable": false,
+            "pages": [
+              {
+                "title": "List sessions",
+                "path": "api-reference/sessions/list-sessions",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/sessions",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Session detail",
+                "path": "api-reference/sessions/get-session",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/sessions/{session_id}",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Revoke a session",
+                "path": "api-reference/sessions/revoke-session",
+                "icon": "trash-2",
+                "openapi": "api-reference/openapi.yaml DELETE /v1/sessions/{session_id}",
+                "openapi-mode": "auto"
+              }
+            ]
+          },
+          {
+            "group": "API keys",
+            "icon": "key",
+            "expandable": false,
+            "pages": [
+              {
+                "title": "API key scopes",
+                "path": "api-reference/keys/key-scopes",
+                "icon": "info"
               },
               {
                 "title": "Key binding",
-                "path": "api-reference/key-binding",
-                "icon": "link"
+                "path": "api-reference/keys/key-binding",
+                "icon": "info"
               },
+              {
+                "title": "Create an API key",
+                "path": "api-reference/keys/create-key",
+                "icon": "plus",
+                "openapi": "api-reference/openapi.yaml POST /v1/keys",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "List keys",
+                "path": "api-reference/keys/list-keys",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/keys",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Revoke a key",
+                "path": "api-reference/keys/revoke-key",
+                "icon": "trash-2",
+                "openapi": "api-reference/openapi.yaml DELETE /v1/keys/{key_id}",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Rotate a key",
+                "path": "api-reference/keys/rotate-key",
+                "icon": "plus",
+                "openapi": "api-reference/openapi.yaml POST /v1/keys/{key_id}/rotate",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Bind a key to an agent or roles",
+                "path": "api-reference/keys/bind-key",
+                "icon": "pen-line",
+                "openapi": "api-reference/openapi.yaml PATCH /v1/keys/{key_id}/binding",
+                "openapi-mode": "auto"
+              }
+            ]
+          },
+          {
+            "group": "Agent registry",
+            "icon": "bot",
+            "expandable": false,
+            "pages": [
               {
                 "title": "Agent registry",
-                "path": "api-reference/agent-registry",
-                "icon": "bot"
+                "path": "api-reference/agents/registry-overview",
+                "icon": "info"
               },
               {
+                "title": "Register a new agent",
+                "path": "api-reference/agents/register-agent",
+                "icon": "plus",
+                "openapi": "api-reference/openapi.yaml POST /v1/agents",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "List agents",
+                "path": "api-reference/agents/list-agents",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/agents",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Get an agent",
+                "path": "api-reference/agents/get-agent",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/agents/{agent_id}",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Update agent metadata",
+                "path": "api-reference/agents/update-agent",
+                "icon": "pencil",
+                "openapi": "api-reference/openapi.yaml PUT /v1/agents/{agent_id}",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Transition agent approval status",
+                "path": "api-reference/agents/update-agent-status",
+                "icon": "pen-line",
+                "openapi": "api-reference/openapi.yaml PATCH /v1/agents/{agent_id}/status",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Registry-wide agent counts",
+                "path": "api-reference/agents/get-agent-stats-summary",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /v1/agents/stats/summary",
+                "openapi-mode": "auto"
+              }
+            ]
+          },
+          {
+            "group": "Admin",
+            "icon": "shield-check",
+            "expandable": false,
+            "pages": [
+              {
                 "title": "Tenant enforcement settings",
-                "path": "api-reference/tenant-enforcement-settings",
-                "icon": "settings"
+                "path": "api-reference/admin/tenant-enforcement",
+                "icon": "info"
               },
               {
                 "title": "Superadmin key provisioning",
-                "path": "api-reference/superadmin-key-provisioning",
-                "icon": "key-round"
+                "path": "api-reference/admin/superadmin-provisioning",
+                "icon": "info"
+              },
+              {
+                "title": "Create a tenant",
+                "path": "api-reference/admin/create-tenant",
+                "icon": "plus",
+                "openapi": "api-reference/openapi.yaml POST /v1/admin/tenants",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Update tenant enforcement settings",
+                "path": "api-reference/admin/update-tenant-settings",
+                "icon": "pen-line",
+                "openapi": "api-reference/openapi.yaml PATCH /v1/admin/tenants/{tenant_id}/settings",
+                "openapi-mode": "auto"
+              },
+              {
+                "title": "Provision a key for any tenant",
+                "path": "api-reference/admin/provision-tenant-key",
+                "icon": "plus",
+                "openapi": "api-reference/openapi.yaml POST /v1/admin/tenants/{tenant_id}/keys",
+                "openapi-mode": "auto"
+              }
+            ]
+          },
+          {
+            "group": "Health",
+            "icon": "heart-pulse",
+            "expandable": false,
+            "pages": [
+              {
+                "title": "Liveness probe",
+                "path": "api-reference/health/health",
+                "icon": "arrow-down-to-line",
+                "openapi": "api-reference/openapi.yaml GET /health",
+                "openapi-mode": "auto"
               }
             ]
           }
