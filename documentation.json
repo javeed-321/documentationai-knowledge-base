@@ -206,8 +206,7 @@
         ],
         "path": "Home",
         "show-sidebar": false,
-        "show-toc": false,
-        "content-width": "wide"
+        "show-toc": false
       },
       {
         "tab": "API Reference",
