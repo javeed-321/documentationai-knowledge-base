@@ -7,10 +7,12 @@
 :root:has(h2#autopil-documentation) {
 
   /* ─── Hide redundant page chrome (keep the top nav tabs) ─── */
-  .dai-breadcrumbs { display: none !important; }
-  .dai-page-header { display: none !important; }
-  .page-title      { display: none !important; }
-  [data-component="Heading"] > div { display: none !important; }
+  .dai-breadcrumbs  { display: none !important; }
+  .dai-page-header  { display: none !important; }
+  .page-title       { display: none !important; }
+  .page-description { display: none !important; }   /* SEO meta stays in <head> */
+  [data-component="Heading"] > div  { display: none !important; }
+  [data-component="Heading"] > span { display: none !important; }  /* anchor link icon */
 
   /* ─── Content column (wide, no sidebar) ─── */
   .dai-article { padding-top: 8px !important; }
@@ -23,6 +25,7 @@
 
   /* ─── Hero heading + teal eyebrow ─── */
   .dai-article h2#autopil-documentation {
+    display: block !important;   /* override platform "flex items-start" so eyebrow stacks above */
     font-size: 40px !important;
     font-weight: 800 !important;
     letter-spacing: -0.02em !important;
