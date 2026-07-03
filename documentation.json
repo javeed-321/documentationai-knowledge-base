@@ -1,6 +1,5 @@
 {
   "name": "AutoPIL",
-  "initialRoute": "Home",
   "colors": {
     "light": {
       "brand": "#4F46E5",
