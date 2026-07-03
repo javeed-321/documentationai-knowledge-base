@@ -3,8 +3,6 @@ title: "Go SDK"
 description: "A stdlib-only REST client published at github.com/vibrantcapital/autopil-go. No external dependencies — uses only net/http and encoding/json. Requires Go 1.21+."
 ---
 
-## Go SDK
-
 A stdlib-only REST client published at `github.com/vibrantcapital/autopil-go`. No external dependencies — uses only `net/http` and `encoding/json`. Requires Go 1.21+.
 
 ```bash title="terminal"
@@ -14,7 +12,7 @@ go get github.com/vibrantcapital/autopil-go
 Set `AUTOPIL_BASE_URL` and `AUTOPIL_API_KEY` in your environment. Get your key from the dashboard under Settings → API Keys (`evaluate` scope for agent code).
 
 ```go title="main.go"
-import "github.com/vibrantcapital/autopil-go/autopil"
+import "github.com/vibrantcapital/autopil-go/autopil"Yes
 
 client := autopil.New(
     os.Getenv("AUTOPIL_BASE_URL"),  // https://your-app.onrender.com

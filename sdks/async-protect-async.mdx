@@ -3,8 +3,6 @@ title: "Async decorator — protect_async"
 description: "For async agent frameworks (FastAPI, asyncio, aioboto3), use protect_async instead of protect."
 ---
 
-## Async decorator — protect_async
-
 For async agent frameworks (FastAPI, asyncio, aioboto3), use `protect_async` instead of `protect`. It uses `contextvars.ContextVar` instead of `threading.local()`, making `last_event_id` safe under concurrent async tasks.
 
 ```python title="async_retrieval.py"

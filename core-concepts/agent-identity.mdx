@@ -3,8 +3,6 @@ title: "Agent identity"
 description: "By default, AutoPIL trusts the agent_role supplied at decoration time — a structural guarantee that is sufficient for most single-agent pipelines."
 ---
 
-## Agent identity
-
 By default, AutoPIL trusts the `agent_role` supplied at decoration time — a structural guarantee that is sufficient for most single-agent pipelines. For multi-agent systems where agents are autonomous or long-running, you can add cryptographic identity binding so that only a specific registered, approved agent instance can make a given evaluation call.
 
 How it works: Agent identity has three independent layers, each building on the previous:

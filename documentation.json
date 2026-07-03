@@ -237,14 +237,14 @@
                 "icon": "zap"
               },
               {
-                "title": "MCP Server",
-                "path": "sdks/mcp-server",
-                "icon": "server"
-              },
-              {
                 "title": "ASGI Middleware",
                 "path": "sdks/middleware",
                 "icon": "layers"
+              },
+              {
+                "title": "MCP Server",
+                "path": "sdks/mcp-server",
+                "icon": "server"
               },
               {
                 "title": "Framework integrations",
