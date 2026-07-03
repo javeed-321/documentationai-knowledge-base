@@ -203,7 +203,11 @@
               }
             ]
           }
-        ]
+        ],
+        "path": "Home",
+        "show-sidebar": false,
+        "show-toc": false,
+        "content-width": "wide"
       },
       {
         "tab": "API Reference",
