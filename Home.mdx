@@ -1,0 +1,118 @@
+---
+title: "AutoPIL Documentation"
+show-sidebar: false
+show-toc: false
+show-page-navigation: false
+show-parent-label: false
+content-width: wide
+---
+
+## AutoPIL Documentation
+
+Runtime governance for autonomous AI agents. Enforce data-access policy at the retrieval layer — before information enters an agent's context window — and prove every decision with a tamper-evident audit trail.
+
+<Columns cols="2">
+  <Card title="Quick start" href="/getting-started/quickstart" icon="zap" horizontal="false">
+    Install the SDK, point it at a policy directory, and protect your first retrieval in minutes.
+  </Card>
+
+  <Card title="API reference" href="/api-reference/authentication" icon="code" horizontal="false">
+    Authenticate and call the REST API to evaluate context, manage policies, and query audit logs.
+  </Card>
+</Columns>
+
+### Get started
+
+<Columns cols="3">
+  <Card title="Quick start" href="/getting-started/quickstart" icon="zap" horizontal="false">
+    Protect your first retrieval function with a single decorator.
+  </Card>
+
+  <Card title="Installation" href="/getting-started/installation" icon="download" horizontal="false">
+    Add the AutoPIL package and configure your environment.
+  </Card>
+
+  <Card title="First-start bootstrap" href="/getting-started/first-start" icon="power" horizontal="false">
+    Initialize the engine, load policies, and verify enforcement is live.
+  </Card>
+</Columns>
+
+### Core concepts
+
+<Columns cols="4">
+  <Card title="Architecture" href="/core-concepts/architecture" icon="network" horizontal="false">
+    How the governance layer sits between your agents and their data sources.
+  </Card>
+
+  <Card title="Enforcement flow" href="/core-concepts/enforcement-flow" icon="git-branch" horizontal="false">
+    Trace a retrieval request from policy evaluation to allow, deny, or mask.
+  </Card>
+
+  <Card title="Multi-tenancy" href="/core-concepts/multi-tenancy" icon="building" horizontal="false">
+    Row-level tenant isolation across policies, sessions, and audit records.
+  </Card>
+
+  <Card title="Agent identity" href="/core-concepts/agent-identity" icon="fingerprint" horizontal="false">
+    Bind every request to a verified agent so decisions are attributable.
+  </Card>
+</Columns>
+
+### Policies & integration
+
+<Columns cols="4">
+  <Card title="Policy file format" href="/policy-guide/policy-format" icon="file-code" horizontal="false">
+    Write YAML policies with source allowlists, denylists, and sensitivity ceilings.
+  </Card>
+
+  <Card title="Fields reference" href="/policy-guide/fields-reference" icon="list" horizontal="false">
+    Every policy field, its accepted values, and how it is evaluated.
+  </Card>
+
+  <Card title="Python SDK" href="/sdks/python-sdk" icon="code" horizontal="false">
+    Guard retrieval functions with decorators and middleware in your Python stack.
+  </Card>
+
+  <Card title="MCP Server" href="/sdks/mcp-server" icon="server" horizontal="false">
+    Expose governance as MCP tools for agents that speak the Model Context Protocol.
+  </Card>
+</Columns>
+
+### API reference
+
+<Columns cols="4">
+  <Card title="Authentication" href="/api-reference/authentication" icon="lock" horizontal="false">
+    Provision API keys and authenticate requests to the governance API.
+  </Card>
+
+  <Card title="Evaluate context" href="/api-reference/context/evaluate-context" icon="scale" horizontal="false">
+    Submit a retrieval request and get an allow, deny, or mask decision back.
+  </Card>
+
+  <Card title="Policies" href="/api-reference/policies/list-policies" icon="shield" horizontal="false">
+    List, create, version, and hot-reload the policies that drive enforcement.
+  </Card>
+
+  <Card title="Audit log" href="/api-reference/audit/list-audit-events" icon="scroll-text" horizontal="false">
+    Query the tamper-evident, hash-chained record of every governance decision.
+  </Card>
+</Columns>
+
+### Deploy & operate
+
+<Columns cols="4">
+  <Card title="Docker" href="/deployment/docker" icon="container" horizontal="false">
+    Run AutoPIL as a container in staging or production.
+  </Card>
+
+  <Card title="Postgres" href="/deployment/postgres" icon="database" horizontal="false">
+    Back the audit log and policy store with a durable Postgres instance.
+  </Card>
+
+  <Card title="OpenTelemetry" href="/deployment/opentelemetry" icon="activity" horizontal="false">
+    Route metrics and traces to Datadog, Grafana, or Splunk.
+  </Card>
+
+  <Card title="PII masking" href="/deployment/pii-masking" icon="eye-off" horizontal="false">
+    Redact sensitive fields before they ever reach an agent's context.
+  </Card>
+</Columns>
