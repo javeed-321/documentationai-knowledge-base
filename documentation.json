@@ -21,7 +21,6 @@
         "groups": [
           {
             "group": "Getting Started",
-            "icon": "rocket",
             "expandable": false,
             "pages": [
               {
@@ -43,7 +42,6 @@
           },
           {
             "group": "Core Concepts",
-            "icon": "layers",
             "expandable": false,
             "pages": [
               {
@@ -70,7 +68,6 @@
           },
           {
             "group": "Policy Guide",
-            "icon": "shield",
             "expandable": false,
             "pages": [
               {
@@ -112,7 +109,6 @@
           },
           {
             "group": "SDKs & Integrations",
-            "icon": "plug",
             "expandable": false,
             "pages": [
               {
@@ -164,7 +160,6 @@
           },
           {
             "group": "Deployment",
-            "icon": "server",
             "expandable": false,
             "pages": [
               {
@@ -212,7 +207,6 @@
         "groups": [
           {
             "group": "Concepts",
-            "icon": "book-open",
             "expandable": false,
             "pages": [
               {
@@ -234,7 +228,6 @@
           },
           {
             "group": "Context",
-            "icon": "scale",
             "expandable": false,
             "pages": [
               {
@@ -248,7 +241,6 @@
           },
           {
             "group": "Audit log",
-            "icon": "scroll-text",
             "expandable": false,
             "pages": [
               {
@@ -304,7 +296,6 @@
           },
           {
             "group": "Retention",
-            "icon": "clock",
             "expandable": false,
             "pages": [
               {
@@ -330,7 +321,6 @@
           },
           {
             "group": "Policies",
-            "icon": "shield",
             "expandable": false,
             "pages": [
               {
@@ -386,7 +376,6 @@
           },
           {
             "group": "Alerts",
-            "icon": "bell",
             "expandable": false,
             "pages": [
               {
@@ -433,7 +422,6 @@
           },
           {
             "group": "Sessions",
-            "icon": "activity",
             "expandable": false,
             "pages": [
               {
@@ -461,7 +449,6 @@
           },
           {
             "group": "API keys",
-            "icon": "key",
             "expandable": false,
             "pages": [
               {
@@ -513,7 +500,6 @@
           },
           {
             "group": "Agent registry",
-            "icon": "bot",
             "expandable": false,
             "pages": [
               {
@@ -567,7 +553,6 @@
           },
           {
             "group": "Admin",
-            "icon": "shield-check",
             "expandable": false,
             "pages": [
               {
@@ -605,7 +590,6 @@
           },
           {
             "group": "Health",
-            "icon": "heart-pulse",
             "expandable": false,
             "pages": [
               {
