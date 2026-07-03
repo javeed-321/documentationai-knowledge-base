@@ -6,7 +6,8 @@
 */
 :root:has(h2#autopil-documentation) {
 
-  /* ─── Hide redundant page chrome (keep the top nav tabs) ─── */
+  /* ─── Hide redundant page chrome ─── */
+  .dai-navbar-tabs  { display: none !important; }
   .dai-breadcrumbs  { display: none !important; }
   .dai-page-header  { display: none !important; }
   .page-title       { display: none !important; }
@@ -75,41 +76,17 @@
     margin-bottom: 8px !important;
     gap: 14px !important;
   }
+  /* CTA cards share the clean neutral card style (no heavy fill); the primary
+     is distinguished only by a subtle teal top accent, not a solid block. */
   h2#autopil-documentation + p + [data-component="Columns"] [data-component="Card"] {
-    min-height: 0 !important;
-    border-radius: 14px !important;
-    flex-direction: row !important;
-    align-items: center !important;
+    min-height: 130px !important;
+    border-radius: 16px !important;
   }
-  /* Primary CTA — teal fill */
   h2#autopil-documentation + p + [data-component="Columns"] > a:nth-child(1) [data-component="Card"] {
-    background: #0891B2 !important;
-    border-color: #0891B2 !important;
-  }
-  h2#autopil-documentation + p + [data-component="Columns"] > a:nth-child(1) [data-component="Card"] > div:first-child,
-  h2#autopil-documentation + p + [data-component="Columns"] > a:nth-child(1) [data-component="Card"] .dai-card-title {
-    color: #FFFFFF !important;
-  }
-  h2#autopil-documentation + p + [data-component="Columns"] > a:nth-child(1) [data-component="Card"] .dai-card-description {
-    color: rgba(255,255,255,0.85) !important;
-  }
-  h2#autopil-documentation + p + [data-component="Columns"] > a:nth-child(1):hover [data-component="Card"] {
-    box-shadow: 0 8px 22px rgba(8,145,178,0.32) !important;
-    border-color: #0891B2 !important;
-  }
-  h2#autopil-documentation + p + [data-component="Columns"] > a:nth-child(1):hover [data-component="Card"] .dai-card-title {
-    color: #FFFFFF !important;
+    border-top: 3px solid #0891B2 !important;
   }
   &.dark h2#autopil-documentation + p + [data-component="Columns"] > a:nth-child(1) [data-component="Card"] {
-    background: #22D3EE !important;
-    border-color: #22D3EE !important;
-  }
-  &.dark h2#autopil-documentation + p + [data-component="Columns"] > a:nth-child(1) [data-component="Card"] > div:first-child,
-  &.dark h2#autopil-documentation + p + [data-component="Columns"] > a:nth-child(1) [data-component="Card"] .dai-card-title {
-    color: #04222B !important;
-  }
-  &.dark h2#autopil-documentation + p + [data-component="Columns"] > a:nth-child(1) [data-component="Card"] .dai-card-description {
-    color: rgba(4,34,43,0.78) !important;
+    border-top: 3px solid #22D3EE !important;
   }
 
   /* ─── Section labels (H2) ─── */
