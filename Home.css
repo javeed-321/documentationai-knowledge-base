@@ -104,29 +104,27 @@
     border-color: #2C7A8C !important;
   }
 
-  /* ─── Icon chip ─── */
-  [data-component="Card"] > div:first-child {
-    width: fit-content !important;
-    margin: 24px 0 0 24px !important;
-    padding: 10px !important;
+  /* ─── Collapse the empty image slot (the stray "dot") ─── */
+  [data-component="Card"] > div:first-child:empty { display: none !important; }
+
+  /* ─── Icon rendered as a subtle teal chip ─── */
+  [data-component="Card"] svg.lucide {
+    width: 22px !important;
+    height: 22px !important;
+    box-sizing: content-box !important;
+    padding: 9px !important;
     border-radius: 12px !important;
     background: rgba(8,145,178,0.10) !important;
     color: #0891B2 !important;
-    overflow: visible !important;
+    stroke-width: 1.9 !important;
     transition: background 0.2s ease !important;
   }
-  &.dark [data-component="Card"] > div:first-child {
+  &.dark [data-component="Card"] svg.lucide {
     background: rgba(34,211,238,0.12) !important;
     color: #22D3EE !important;
   }
-  [data-component="Card"] > div:first-child svg {
-    width: 22px !important;
-    height: 22px !important;
-    stroke-width: 1.9 !important;
-    display: block !important;
-  }
-  [data-component="Card"]:hover > div:first-child { background: rgba(8,145,178,0.16) !important; }
-  &.dark [data-component="Card"]:hover > div:first-child { background: rgba(34,211,238,0.18) !important; }
+  [data-component="Card"]:hover svg.lucide { background: rgba(8,145,178,0.16) !important; }
+  &.dark [data-component="Card"]:hover svg.lucide { background: rgba(34,211,238,0.18) !important; }
 
   /* ─── Card body ─── */
   [data-component="Card"] > div:last-child { padding: 16px 24px 24px 24px !important; }
