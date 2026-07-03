@@ -1,6 +1,6 @@
 ---
 title: "Multi-tenancy"
-description: "AutoPIL uses row-level tenant isolation. Every table carries a tenant_id column."
+description: "How row-level tenant isolation scopes audit events, policies, and keys to each tenant."
 ---
 
 AutoPIL uses row-level tenant isolation. Every table carries a `tenant_id` column. All queries are filtered to the calling tenant's ID — audit events, policies, alert rules, API keys, and sessions are fully separated across tenants.
