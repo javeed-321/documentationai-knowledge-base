@@ -3,6 +3,8 @@ title: "Policy file format"
 description: "Structure of an AutoPIL policy YAML file and how multiple roles are defined."
 ---
 
+## Policy file structure
+
 Policies are YAML files with a single top-level `policies` key containing a list of role definitions. Multiple roles live in the same file.
 
 ```yaml title="policies/financial_services/consumer_banking.yaml"
@@ -45,6 +47,8 @@ policies:
     max_sensitivity: high
 ```
 
+## Directory structure
+
 Directory structure: Scale beyond a single file with an industry-organized directory. AutoPIL recursively loads all `*.yaml` files and injects `industry` and `process_group` metadata automatically from the path — no additional YAML fields required.
 
 ```bash title="policies/"
@@ -73,4 +77,3 @@ policies/
 <Callout kind="info">
   Path-based metadata injection: When loading from a directory, `industry` is set from the first path component and `process_group` from the YAML filename stem. Explicit values in the YAML always take precedence.
 </Callout>
-

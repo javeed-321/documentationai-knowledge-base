@@ -3,6 +3,8 @@ title: "Retention"
 description: "Set per-tenant audit and session retention windows from the dashboard in production."
 ---
 
+## Configure retention
+
 Retention is configured per tenant from the dashboard under Settings → Retention — no environment variable changes required. Defaults are 365 days for audit events and 90 days for session records. Both purge workers start automatically and run every 24 hours.
 
 | Data type | Default | Notes |
@@ -10,7 +12,10 @@ Retention is configured per tenant from the dashboard under Settings → Retenti
 | Audit events | 365 days | All events older than the configured window are deleted. A chain anchor is stored before each purge. |
 | Session records | 90 days | Only expired or revoked sessions older than the configured window are deleted. Active sessions are never purged. |
 
+## Change the window
+
 To change retention, open the Settings tab in the dashboard, update either value, and click Save. A confirmation prompt appears when reducing either window — the deletion is permanent and runs on the next nightly cycle.
 
-The `AUDIT_RETENTION_DAYS` environment variable sets a system-wide fallback but is superseded by per-tenant settings once configured. Check current retention state and last purge anchor via `GET /v1/audit/retention`.
+## Environment fallback
 
+The `AUDIT_RETENTION_DAYS` environment variable sets a system-wide fallback but is superseded by per-tenant settings once configured. Check current retention state and last purge anchor via `GET /v1/audit/retention`.

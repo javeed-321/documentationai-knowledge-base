@@ -3,6 +3,8 @@ title: "Async decorator — protect_async"
 description: "Use protect_async for FastAPI, asyncio, and other async frameworks with contextvars support."
 ---
 
+## Async decorator
+
 For async agent frameworks (FastAPI, asyncio, aioboto3), use `protect_async` instead of `protect`. It uses `contextvars.ContextVar` instead of `threading.local()`, making `last_event_id` safe under concurrent async tasks.
 
 ```python title="async_retrieval.py"
@@ -30,6 +32,8 @@ results = await asyncio.gather(
 <Callout kind="info">
   Source type: `protect_async` uses the same `_source_type="sdk"` as the sync decorator. All audit events are stamped consistently regardless of sync vs async path.
 </Callout>
+
+## TypeScript SDK
 
 TypeScript SDK: A thin REST API wrapper published as `@autopil/sdk`. Zero runtime dependencies — uses native `fetch` (Node 18+).
 
@@ -68,6 +72,8 @@ const events = await client.audit.listEvents({
 })
 ```
 
+## Client resources
+
 Client resources:
 
 | Resource | Methods |
@@ -85,4 +91,3 @@ Client resources:
 <Callout kind="info">
   `AutoPilError` is thrown for non-2xx responses and carries `statusCode` and `detail` from the server.
 </Callout>
-

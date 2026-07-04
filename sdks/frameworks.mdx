@@ -3,7 +3,11 @@ title: "Framework integrations"
 description: "Native guard subclasses for the five major agent frameworks, each tagged with its own source_type."
 ---
 
+## Framework guards
+
 AutoPIL ships native guard subclasses for the five major agent frameworks. Each sets a distinct `source_type` so the dashboard can break down access by framework.
+
+### LangChain
 
 ```python title="langchain_agent.py"
 from autopil.langchain_guard import LangChainGuard
@@ -22,6 +26,8 @@ def get_market_data(ticker: str) -> dict:
 # source_type="langchain" — works with LCEL and LangChain agents
 ```
 
+### LlamaIndex
+
 ```python title="llamaindex_agent.py"
 from autopil.llamaindex_guard import LlamaIndexGuard
 
@@ -37,6 +43,8 @@ def retrieve_contract(clause: str) -> str:
 # source_type="llamaindex" — wraps query engines and retrievers
 ```
 
+### Gemini
+
 ```python title="gemini_agent.py"
 from autopil.gemini_guard import GeminiGuard
 
@@ -51,6 +59,8 @@ def fetch_document(doc_id: str) -> str:
     return docs_api.get(doc_id)
 # source_type="gemini" — wraps functions called from Gemini function-calling agents
 ```
+
+### OpenAI Agents
 
 ```python title="openai_agent.py"
 from autopil.openai_agents_guard import OpenAIAgentsGuard
@@ -68,6 +78,8 @@ def get_filing(filing_id: str) -> dict:
     return filings_db.fetch(filing_id)
 # source_type="openai_agents"
 ```
+
+### Bedrock
 
 ```python title="bedrock_agent.py — sync (boto3)"
 import boto3
@@ -112,6 +124,8 @@ async with aioboto3.Session().client("bedrock-agent-runtime") as boto_client:
     )
 ```
 
+## Integration channel reference
+
 Integration channel reference:
 
 | Guard class | source_type | Use case |
@@ -126,4 +140,3 @@ Integration channel reference:
 | `GeminiGuard` | `gemini` | Google Gemini function-calling agents |
 | `OpenAIAgentsGuard` | `openai_agents` | OpenAI Agents SDK function tools |
 | `BedrockGuard` | `bedrock` | AWS Bedrock Agents via boto3 / aioboto3 |
-

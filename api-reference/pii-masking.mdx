@@ -3,6 +3,8 @@ title: "PII masking"
 description: "Which audit fields are masked when PII masking is enabled, and how existing events are treated."
 ---
 
+## Masked fields
+
 When `AUTOPIL_LOG_PII_MASK=true`, three fields are masked before each new audit event is written. Existing events are not modified.
 
 | Field | Stored as | Notes |
@@ -11,5 +13,6 @@ When `AUTOPIL_LOG_PII_MASK=true`, three fields are masked before each new audit 
 | `user_id` | `uid:<16-char hex>` | Tenant-salted hash — consistent within a tenant, so per-user filtering still works |
 | `reason` | Preserved, `query=<value>` substrings replaced with `query=sha256:<hash>` | Policy decision context is kept intact; embedded query content is removed |
 
-Events written with masking enabled carry `"pii_masked": true`. The dashboard Event Detail drawer shows a PII masked badge on these events. The `context_hash` is unaffected — chain integrity verification continues to work normally.
+## Badges and integrity
 
+Events written with masking enabled carry `"pii_masked": true`. The dashboard Event Detail drawer shows a PII masked badge on these events. The `context_hash` is unaffected — chain integrity verification continues to work normally.

@@ -3,6 +3,8 @@ title: "Installation"
 description: "Install options for the SQLite, Postgres, and OpenTelemetry backends, with a first protected-retrieval example."
 ---
 
+## Install the package
+
 ```bash title="terminal"
 # Base install (SQLite backend)
 pip install autopil
@@ -19,6 +21,8 @@ pip install autopil[otel-http]
 # All dev dependencies (tests, linting)
 pip install autopil[dev]
 ```
+
+## Protect your first retrieval function
 
 Protect your first retrieval function:
 
@@ -47,4 +51,3 @@ score = get_credit_score("cust_abc")
 # DENY — raises PermissionError, denial logged, alert rules checked
 # source='executive_comms' is on the denylist for this role
 ```
-

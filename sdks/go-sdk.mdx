@@ -5,9 +5,13 @@ description: "A dependency-free Go REST client built on net/http and encoding/js
 
 A stdlib-only REST client published at `github.com/vibrantcapital/autopil-go`. No external dependencies — uses only `net/http` and `encoding/json`. Requires Go 1.21+.
 
+## Install
+
 ```bash title="terminal"
 go get github.com/vibrantcapital/autopil-go
 ```
+
+## Usage
 
 Set `AUTOPIL_BASE_URL` and `AUTOPIL_API_KEY` in your environment. Get your key from the dashboard under Settings → API Keys (`evaluate` scope for agent code).
 
@@ -40,6 +44,8 @@ events, err := client.Audit.ListEvents(ctx, autopil.ListEventsParams{
 })
 ```
 
+## Client resources
+
 Client resources:
 
 | Resource | Methods |
@@ -53,4 +59,3 @@ Client resources:
 <Callout kind="info">
   `AutoPILError` implements `error` and carries `StatusCode int` and `Detail string` from the server response. Options: `autopil.WithTimeout(d)`, `autopil.WithHTTPClient(c)`.
 </Callout>
-

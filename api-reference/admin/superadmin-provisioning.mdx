@@ -4,4 +4,3 @@ description: "Provision keys for any tenant as a superadmin, without that tenant
 ---
 
 Allows a superadmin to create additional keys for any tenant without needing that tenant's credentials. Accepts the same `name`, `scope`, and `expires_days` fields as `POST /v1/keys`. Returns 404 if the tenant does not exist and 409 if the tenant is deactivated.
-

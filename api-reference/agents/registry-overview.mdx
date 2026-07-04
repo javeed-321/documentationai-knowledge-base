@@ -3,7 +3,11 @@ title: "Agent registry"
 description: "Register, approve, and manage agent instances in the authoritative agent registry."
 ---
 
+## The agent registry
+
 The agent registry is the authoritative catalog of AI agent instances in your tenant. Agents must be registered and approved before they can present an `agent_id` in evaluate calls.
+
+## Registry fields
 
 | Field | Type | Description |
 |---|---|---|
@@ -15,4 +19,3 @@ The agent registry is the authoritative catalog of AI agent instances in your te
 | `permitted_roles` | list | Roles this agent is allowed to claim. If omitted, defaults to `[agent_role]`. |
 | `credential_type` | string | Authentication method: `api_key` (default), `jwt_oidc`, `mtls`, `conjur`. |
 | `bound_key_id` | string | If set, only the key with this ID may present this agent's identity. Prevents key sharing across agent instances. |
-

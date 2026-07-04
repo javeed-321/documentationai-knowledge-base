@@ -5,9 +5,11 @@ description: "Call the REST API from Python when AutoPIL runs on Render or anoth
 
 If your AutoPIL instance is deployed on Render or any other host, call the REST API directly — do not use the embedded `ContextGuard`. Follow these steps in order.
 
+## Connect over the REST API
+
 <Steps>
   <Step title="Verify your instance is running">
-    `curl https://your-app.onrender.com/health` should return `{"status": "ok"}`. If it fails, check your Render service logs before continuing.
+    `curl "$AUTOPIL_BASE_URL/health"` should return `{"status": "ok"}`. If it fails, check your Render service logs before continuing.
   </Step>
   <Step title="Create a policy in the dashboard">
     Go to Policies → New Policy. Set the agent role (e.g. `analyst`), max sensitivity, and allowed sources. Without a matching policy every call is denied.
@@ -28,6 +30,8 @@ If your AutoPIL instance is deployed on Render or any other host, call the REST 
     Open the dashboard → Audit Events. Your event should appear with the agent role, source, and decision. If nothing shows up: confirm the `agent_role` and `source_id` match your policy exactly, and that the API key belongs to the correct tenant.
   </Step>
 </Steps>
+
+## Client setup
 
 ```bash title=".env"
 AUTOPIL_BASE_URL=https://your-app.onrender.com
@@ -76,6 +80,8 @@ context = your_vectorstore.search(query)
   Fail closed on network errors. If AutoPIL is unreachable, block access rather than silently bypassing governance. The example above does this — never swap the except block for a silent pass.
 </Callout>
 
+## Embedded mode (ContextGuard)
+
 ContextGuard (embedded mode): Use this for local development or self-hosted single-process deployments where AutoPIL runs in the same process as your agent. For production agents on Render, use the REST pattern above.
 
 ```python title="ContextGuard constructor"
@@ -89,6 +95,8 @@ guard = ContextGuard(
 )
 ```
 
+## Decorator parameters
+
 @guard.protect() decorator parameters:
 
 | Parameter | Type | Required | Description |
@@ -101,6 +109,8 @@ guard = ContextGuard(
 | `agent_id` | str | no | Registered agent instance ID. When supplied, triggers identity binding checks — registry approval, role permissions, and key binding. Stamped on every audit event for full traceability. |
 | `task_type` | str | no | Checked against `allowed_tasks` / `denied_tasks` if provided. |
 | `tenant_id` | str | no | Override the tenant set at construction time. |
+
+## Action lineage
 
 Action lineage: After a successful retrieval, record what the agent did with the context:
 

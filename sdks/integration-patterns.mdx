@@ -3,7 +3,11 @@ title: "Choosing an integration pattern"
 description: "Choose between the embedded decorator and the REST API for your deployment and identity model."
 ---
 
+## Two integration paths
+
 AutoPIL has two primary integration paths for Python — the embedded decorator and the REST API. They enforce the same policies and write to the same audit log, but the right choice depends on how your stack is deployed and how user identity flows through your system.
+
+## Decision guide
 
 Decision guide:
 
@@ -17,6 +21,8 @@ Decision guide:
 | Already using LangChain, LlamaIndex, Bedrock, or OpenAI Agents SDK | Framework guard for that library | Wraps at the tool or query-engine level without changing your retrieval code |
 | Enforcing governance without touching agent code | `AutoPILMiddleware` (ASGI) | Intercepts every request at the HTTP layer; agents need no changes |
 
+## How user_id flows
+
 The `user_id` distinction: `user_id` identifies who triggered a retrieval in the audit log — it does not affect allow/deny decisions. How it flows differs between the two patterns:
 
 |  | Embedded decorator | REST API |
@@ -28,6 +34,8 @@ The `user_id` distinction: `user_id` identifies who triggered a retrieval in the
 <Callout kind="alert">
   agent_role works the same way. In both patterns, `agent_role` is developer-supplied — it declares the identity of the access path, not a runtime claim by the agent. The agent cannot change it. In the decorator, it is fixed at decoration time. In the REST API, it is a declared field in the request payload trusted because the API key is already authenticated.
 </Callout>
+
+## Side-by-side example
 
 Side-by-side example — the same governance check (analyst accessing financial reports at high sensitivity) written both ways:
 
@@ -74,4 +82,3 @@ def retrieve_report(query: str, user_id: str, session_id: str):
 <Callout kind="alert">
   Never use the embedded decorator against a remote AutoPIL instance. If your AutoPIL server is on Render, calling `ContextGuard(audit_db="...")` locally opens a separate database — your events will not appear in the shared audit log and policies will not be in sync. Use the REST pattern for any hosted deployment.
 </Callout>
-

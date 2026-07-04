@@ -3,6 +3,8 @@ title: "PII masking"
 description: "Mask sensitive fields in audit events before they are written, for privacy-sensitive deployments."
 ---
 
+## Enable PII masking
+
 For deployments subject to data privacy requirements, AutoPIL can mask sensitive content in audit events before writing to the database. Enable with a single environment variable:
 
 | Variable | Default | Description |
@@ -13,11 +15,14 @@ For deployments subject to data privacy requirements, AutoPIL can mask sensitive
 AUTOPIL_LOG_PII_MASK=true
 ```
 
+## How salting works
+
 Salt is derived from `AUTOPIL_SECRET_KEY + tenant_id` — the same user always hashes to the same value within a tenant, so per-user filtering still works.
+
+## Enforce agent identity globally
 
 Enforcing agent identity globally: To require that every evaluate call across all tenants must supply a registered `agent_id`, set the server-wide flag:
 
 | Variable | Default | Description |
 |---|---|---|
 | `AUTOPIL_REQUIRE_AGENT_ID` | — | Set to `1`, `true`, or `yes` to deny any evaluate call that omits `agent_id`. Denial is recorded with `policy_name="agent_id_required"`. Per-tenant enforcement can also be toggled at runtime via `PATCH /v1/admin/tenants/{id}/settings` without a restart. |
-

@@ -3,10 +3,13 @@ title: "Key binding"
 description: "Bind a key to a registered agent and restrict it to specific roles."
 ---
 
+## Bind a key to an agent
+
 Bind a key to a specific registered agent and/or restrict it to a set of roles. Both fields are optional and independent — you can set one or both.
+
+## Binding fields
 
 | Field | Type | Effect |
 |---|---|---|
 | `bound_agent_id` | string | The key will only accept evaluate calls that present this exact `agent_id`. Requests with a different or missing `agent_id` are denied with `policy_name="key_agent_binding"`. |
 | `permitted_roles` | list | The key will only accept evaluate calls that claim a role in this list. Empty list or omitted = no role restriction. |
-

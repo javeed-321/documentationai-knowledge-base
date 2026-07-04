@@ -6,7 +6,6 @@
 :root:has(h2#autopil-documentation) {
 
   /* ─── Hide page chrome (tabs, breadcrumb, platform title/description, anchors) ─── */
-  .dai-navbar-tabs  { display: none !important; }
   .dai-breadcrumbs  { display: none !important; }
   .dai-page-header  { display: none !important; }
   .page-title       { display: none !important; }

@@ -3,11 +3,15 @@ title: "First-start bootstrap"
 description: "Start the API server, capture the one-time superadmin key, and recover it if you miss it."
 ---
 
+## Start the server
+
 Run the API server pointing at your policy directory:
 
 ```bash title="terminal"
 autopil-serve --policy policies/
 ```
+
+## Capture the superadmin key
 
 On first start, if no tenants exist, the server creates a `default` tenant and prints a superadmin key once:
 
@@ -21,11 +25,14 @@ On first start, if no tenants exist, the server creates a `default` tenant and p
   Save this key. It is shown exactly once. Use it as `X-API-Key` for all subsequent API calls, including creating tenants and provisioning additional keys.
 </Callout>
 
+## Recover a lost key
+
 If you missed the key, regenerate it by setting `AUTOPIL_RESET_ADMIN_KEY=1` and restarting the server — a fresh key will be printed to stdout. For Docker, retrieve it with:
 
 ```bash title="terminal"
 docker compose logs | grep "AUTOPIL ADMIN KEY"
 ```
 
-Once running, create a scoped `evaluate` key from the dashboard under Settings → API Keys for use in agent code. Keep the superadmin key out of agent processes.
+## Create an evaluate key
 
+Once running, create a scoped `evaluate` key from the dashboard under Settings → API Keys for use in agent code. Keep the superadmin key out of agent processes.

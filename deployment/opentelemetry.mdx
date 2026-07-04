@@ -3,7 +3,11 @@ title: "OpenTelemetry"
 description: "Enable OpenTelemetry traces and metrics; a complete no-op when the OTLP endpoint is unset."
 ---
 
+## Enable OpenTelemetry
+
 Activated by setting `OTEL_EXPORTER_OTLP_ENDPOINT`. When unset, the telemetry module is a complete no-op — no spans, no metrics, no overhead.
+
+## Exporter examples
 
 ```bash title="Environment variables"
 # Datadog
@@ -18,4 +22,3 @@ export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Basic <base64>"
 # Local console (no collector needed)
 export OTEL_TRACES_EXPORTER=console
 ```
-

@@ -17,4 +17,3 @@ description: "Reference for every policy field — its type, whether it is requi
 | `permitted_agent_ids` | list | no | If set, only agents whose `agent_id` matches one of these patterns may evaluate against this policy. Supports exact match and `fnmatch` wildcards (e.g. `reporting-agent-*`). Requests that omit `agent_id` are denied when this list is non-empty. |
 | `industry` | string | no | Auto-injected from directory path (e.g. `financial_services`). |
 | `process_group` | string | no | Auto-injected from filename stem (e.g. `consumer_banking`). |
-

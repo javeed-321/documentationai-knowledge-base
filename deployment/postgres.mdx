@@ -3,6 +3,8 @@ title: "Postgres"
 description: "Point AutoPIL at Postgres, with automatic schema creation and safe idempotent migrations."
 ---
 
+## Configure Postgres
+
 ```bash title="Postgres setup"
 # Full Stack edition
 pip install "autopil-saas[catalog]"
@@ -17,5 +19,6 @@ export DATABASE_URL=postgresql://user:pass@host:5432/autopil
 autopil-serve --policy policies/
 ```
 
-Schema is created automatically on first start. Subsequent starts run `ALTER TABLE … ADD COLUMN IF NOT EXISTS` migration guards — safe to run against existing databases. The `docker-compose.yml` starts `postgres:16-alpine` and wires `DATABASE_URL` automatically.
+## Schema and migrations
 
+Schema is created automatically on first start. Subsequent starts run `ALTER TABLE … ADD COLUMN IF NOT EXISTS` migration guards — safe to run against existing databases. The `docker-compose.yml` starts `postgres:16-alpine` and wires `DATABASE_URL` automatically.

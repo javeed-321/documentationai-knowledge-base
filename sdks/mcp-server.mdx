@@ -5,6 +5,8 @@ description: "Expose AutoPIL context governance as native MCP tools for Claude, 
 
 AutoPIL ships an MCP (Model Context Protocol) server that exposes context governance as native tools for any MCP-compatible AI agent — Claude, GPT-4, Gemini, or any custom agent that speaks MCP. No code changes in the agent. The governance layer sits between the model and your data.
 
+## Install and run
+
 ```bash title="Install (bash)"
 pip install autopil[mcp]
 ```
@@ -16,6 +18,8 @@ autopil-mcp --policy policies/ --db autopil.db
 export DATABASE_URL=postgresql://user:pass@host:5432/autopil
 autopil-mcp --policy policies/
 ```
+
+## Configure Claude Desktop
 
 ```json title="~/Library/Application Support/Claude/claude_desktop_config.json"
 {
@@ -31,6 +35,8 @@ autopil-mcp --policy policies/
 
 Restart Claude Desktop. AutoPIL's tools will appear in the tool list automatically.
 
+## Available tools
+
 Available tools:
 
 | Tool | Description |
@@ -42,6 +48,8 @@ Available tools:
 | `list_policies` | List active policies, filterable by industry or agent_role |
 | `reload_policies` | Hot-reload policies from disk without restarting |
 | `get_session_status` | Session summary — owner, event count, sources accessed |
+
+## System prompt pattern
 
 System prompt pattern — add this to your agent's system prompt so governance is enforced automatically:
 
@@ -70,6 +78,8 @@ Policy: loan_underwriter_policy
 Do not proceed with this retrieval. Inform the user that access is not permitted.
 ```
 
+## Cross-agent isolation
+
 Cross-agent isolation is enforced automatically. If a `fraud_analyst` agent tries to access a session owned by `loan_underwriter`:
 
 ```bash title="cross-agent isolation DENY"
@@ -79,4 +89,3 @@ Policy: cross_agent_isolation
 ```
 
 This happens without any configuration — it's built into the `evaluate_context` tool.
-
