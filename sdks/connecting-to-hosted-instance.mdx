@@ -116,4 +116,3 @@ guard.record_action(
 ```
 
 `guard.last_event_id` is stored in `threading.local()` for sync code. For async agents using `protect_async`, it uses `contextvars.ContextVar` — safe under `asyncio.gather()` and concurrent async tasks.
-
